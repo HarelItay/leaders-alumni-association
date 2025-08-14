@@ -6626,7 +6626,7 @@
             },
 
             resetNetworkFilters() {
-                console.log('🔄 Resetting network filters');
+                console.log('🔄 Resetting network filters and clicked states');
                 
                 // Reset all filter buttons to inactive state
                 const filterButtons = document.querySelectorAll('.filter-btn');
@@ -6634,10 +6634,20 @@
                     btn.classList.remove('active');
                 });
                 
+                // Reset all clicked alumni cards to their normal state
+                const allAlumniCards = document.querySelectorAll('.connected-alumni-card');
+                allAlumniCards.forEach(card => {
+                    card.classList.remove('clicked');
+                    // Remove any inline styles that might have been added for clicked state
+                    card.style.transform = '';
+                    card.style.boxShadow = '';
+                    card.style.zIndex = '';
+                });
+                
                 // Clear any active filter states
                 this.activeNetworkFilter = null;
                 
-                console.log('✅ Network filters reset');
+                console.log('✅ Network filters and clicked states reset');
             },
 
             updateSelectedAlumniCard(alumni) {
