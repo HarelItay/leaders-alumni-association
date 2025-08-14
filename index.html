@@ -6610,6 +6610,9 @@
                 
                 console.log(`🎯 Found full alumni data, regenerating network for: ${fullAlumniData.personal?.name || fullAlumniData.name}`);
                 
+                // Reset all active filters when navigating to a new alumni
+                this.resetNetworkFilters();
+                
                 // Clean up current network visualization
                 this.cleanupNetworkVisualization();
                 
@@ -6620,6 +6623,21 @@
                 setTimeout(() => {
                     this.initializeNetworkVisualization(fullAlumniData);
                 }, 100);
+            },
+
+            resetNetworkFilters() {
+                console.log('🔄 Resetting network filters');
+                
+                // Reset all filter buttons to inactive state
+                const filterButtons = document.querySelectorAll('.filter-btn');
+                filterButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Clear any active filter states
+                this.activeNetworkFilter = null;
+                
+                console.log('✅ Network filters reset');
             },
 
             updateSelectedAlumniCard(alumni) {
