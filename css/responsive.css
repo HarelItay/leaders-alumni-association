@@ -1,0 +1,684 @@
+/* ===================================
+   LEADERS Summit 2025 - Alumni Networking
+   Responsive Design Styles
+   =================================== */
+
+/* Mobile-First Approach - Base styles for mobile */
+
+/* Extra Small Devices (Portrait Phones) */
+@media (max-width: 575.98px) {
+    :root {
+        --spacing-xs: 0.2rem;
+        --spacing-sm: 0.4rem;
+        --spacing-md: 0.8rem;
+        --spacing-lg: 1.2rem;
+        --spacing-xl: 1.6rem;
+        --spacing-2xl: 2.4rem;
+        --spacing-3xl: 3.2rem;
+    }
+
+    /* Header */
+    .header-content {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+        text-align: center;
+    }
+
+    .logo h1 {
+        font-size: 1.5rem;
+    }
+
+    .search-container {
+        order: 2;
+        max-width: 100%;
+    }
+
+    .header-stats {
+        order: 3;
+        justify-content: center;
+        gap: var(--spacing-md);
+    }
+
+    .stat-number {
+        font-size: 1.2rem;
+    }
+
+    /* Filter Controls */
+    .filter-controls {
+        top: 140px;
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+        padding: var(--spacing-md) var(--spacing-sm);
+    }
+
+    .filter-buttons {
+        justify-content: center;
+    }
+
+    .filter-btn {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: 0.8rem;
+    }
+
+    .advanced-filters {
+        justify-content: center;
+    }
+
+    .filter-select {
+        min-width: 120px;
+        font-size: 0.8rem;
+    }
+
+    .view-controls {
+        justify-content: center;
+    }
+
+    .randomize-btn {
+        font-size: 0.8rem;
+        padding: var(--spacing-xs) var(--spacing-sm);
+        margin-left: 0;
+        margin-top: var(--spacing-sm);
+    }
+
+    /* Main Content */
+    .main-content {
+        padding: var(--spacing-md) 0;
+    }
+
+    .cards-container {
+        padding: var(--spacing-sm);
+        height: calc(100vh - 300px);
+    }
+
+    /* Alumni Cards */
+    .alumni-card {
+        width: calc(100vw - 2rem);
+        max-width: 300px;
+        height: 320px;
+        position: relative !important;
+        margin: var(--spacing-md) auto;
+        display: block;
+        transform: none !important;
+        float: none;
+    }
+
+    .alumni-card:hover {
+        transform: translateY(-4px) !important;
+    }
+
+    .card-body {
+        padding: var(--spacing-md);
+    }
+
+    .alumni-name {
+        font-size: 1.1rem;
+    }
+
+    .current-role {
+        font-size: 0.9rem;
+    }
+
+    .company-name,
+    .location {
+        font-size: 0.8rem;
+    }
+
+    .expertise-tag {
+        font-size: 0.7rem;
+        padding: 1px 6px;
+    }
+
+    /* Modal */
+    .modal-content {
+        width: 95%;
+        max-height: 85vh;
+        margin: var(--spacing-sm);
+    }
+
+    /* Notifications */
+    .notification-container {
+        top: var(--spacing-sm);
+        right: var(--spacing-sm);
+        left: var(--spacing-sm);
+        max-width: none;
+    }
+
+    .notification {
+        padding: var(--spacing-sm);
+    }
+
+    /* Search Suggestions */
+    .search-suggestions {
+        max-height: 200px;
+    }
+
+    .suggestion-item {
+        padding: var(--spacing-sm);
+        font-size: 0.9rem;
+    }
+
+    /* Background Elements */
+    .bg-particle {
+        display: none;
+    }
+
+    /* Connection Lines */
+    .connection-lines {
+        display: none;
+    }
+
+    /* Error and Empty States */
+    .error-content,
+    .empty-content {
+        padding: var(--spacing-lg);
+        margin: var(--spacing-sm);
+    }
+
+    .error-content h3,
+    .empty-content h3 {
+        font-size: 1.3rem;
+    }
+}
+
+/* Small Devices (Landscape Phones) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .header-content {
+        grid-template-columns: auto 1fr;
+        gap: var(--spacing-lg);
+    }
+
+    .search-container {
+        grid-column: 1 / -1;
+        max-width: 100%;
+        margin-top: var(--spacing-md);
+    }
+
+    .header-stats {
+        grid-column: 1 / -1;
+        justify-content: center;
+        margin-top: var(--spacing-sm);
+    }
+
+    .filter-controls {
+        top: 160px;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .alumni-card {
+        width: calc(50vw - 1.5rem);
+        max-width: 280px;
+        height: 340px;
+    }
+
+    .cards-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-md);
+        height: auto;
+        position: static;
+        align-items: start;
+    }
+
+    .alumni-card {
+        position: static !important;
+        transform: none !important;
+        margin: 0;
+    }
+}
+
+/* Medium Devices (Tablets) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .header-content {
+        grid-template-columns: auto 1fr auto;
+    }
+
+    .filter-controls {
+        top: 100px;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cards-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-lg);
+        height: auto;
+        position: static;
+        padding: var(--spacing-lg);
+    }
+
+    .alumni-card {
+        position: static !important;
+        transform: none !important;
+        width: 100%;
+        max-width: none;
+        height: 360px;
+        margin: 0;
+    }
+
+    .alumni-card:hover {
+        transform: translateY(-6px) !important;
+    }
+
+    /* Enable some animations on tablets */
+    .bg-particle {
+        display: block;
+    }
+
+    .connection-lines {
+        display: block;
+        opacity: 0.3;
+    }
+}
+
+/* Large Devices (Desktops) */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .filter-controls {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .cards-container {
+        position: relative;
+        height: calc(100vh - 200px);
+        display: block;
+    }
+
+    .alumni-card {
+        position: absolute;
+        width: 260px;
+        height: 340px;
+    }
+
+    /* Enable clustering view for larger screens */
+    .cards-container.clustering-view .alumni-card {
+        transition: all 1s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    /* Grid fallback for browsers that don't support positioning */
+    .cards-container.grid-fallback {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--spacing-lg);
+        height: auto;
+    }
+
+    .cards-container.grid-fallback .alumni-card {
+        position: static;
+        width: 100%;
+        margin: 0;
+    }
+}
+
+/* Extra Large Devices (Large Desktops) */
+@media (min-width: 1200px) {
+    .filter-controls {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .cards-container {
+        position: relative;
+        height: calc(100vh - 180px);
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .alumni-card {
+        position: absolute;
+        width: 280px;
+        height: 360px;
+    }
+
+    /* Full animation support on large screens */
+    .alumni-card:hover {
+        transform: translateY(-8px) rotateX(5deg);
+    }
+
+    /* Enable all interactive features */
+    .connection-lines {
+        display: block;
+    }
+
+    .bg-particle {
+        display: block;
+    }
+
+    .morphing-shape {
+        display: block;
+    }
+}
+
+/* Ultra Wide Screens */
+@media (min-width: 1400px) {
+    .cards-container {
+        max-width: 1600px;
+    }
+
+    .alumni-card {
+        width: 300px;
+        height: 380px;
+    }
+
+    .header-content {
+        max-width: 1600px;
+    }
+}
+
+/* Portrait Tablet Specific */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+    .filter-controls {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+
+    .filter-section {
+        text-align: center;
+    }
+
+    .filter-buttons,
+    .advanced-filters,
+    .view-controls {
+        justify-content: center;
+    }
+
+    .cards-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Landscape Phone Specific */
+@media (max-width: 896px) and (orientation: landscape) {
+    .header {
+        padding: var(--spacing-sm) 0;
+    }
+
+    .header-content {
+        grid-template-columns: auto 1fr auto;
+        gap: var(--spacing-md);
+    }
+
+    .logo h1 {
+        font-size: 1.3rem;
+    }
+
+    .filter-controls {
+        top: 70px;
+        padding: var(--spacing-sm) 0;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-md);
+    }
+
+    .filter-section h3 {
+        font-size: 0.8rem;
+        margin-bottom: var(--spacing-xs);
+    }
+
+    .main-content {
+        padding: var(--spacing-sm) 0;
+    }
+
+    .cards-container {
+        height: calc(100vh - 140px);
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--spacing-sm);
+        align-items: start;
+    }
+
+    .alumni-card {
+        position: static !important;
+        width: 100%;
+        height: 280px;
+        transform: none !important;
+        margin: 0;
+    }
+
+    .card-body {
+        padding: var(--spacing-sm);
+    }
+
+    .alumni-name {
+        font-size: 1rem;
+    }
+
+    .current-role {
+        font-size: 0.85rem;
+    }
+}
+
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .profile-photo {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+
+    .search-icon,
+    .voice-search-btn svg,
+    .filter-icon {
+        transform: translateZ(0);
+    }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+    /* Larger touch targets */
+    .filter-btn,
+    .view-btn,
+    .randomize-btn {
+        min-height: 48px;
+        min-width: 48px;
+        padding: var(--spacing-md);
+    }
+
+    .voice-search-btn {
+        min-width: 48px;
+        min-height: 48px;
+    }
+
+    .modal-close {
+        width: 48px;
+        height: 48px;
+    }
+
+    /* Remove hover effects */
+    .alumni-card:hover,
+    .filter-btn:hover,
+    .view-btn:hover,
+    .randomize-btn:hover {
+        transform: none;
+        box-shadow: var(--shadow-md);
+    }
+
+    /* Focus styles for touch */
+    .alumni-card:focus,
+    .filter-btn:focus,
+    .view-btn:focus {
+        outline: 3px solid var(--secondary-color);
+        outline-offset: 2px;
+    }
+
+    /* Disable complex animations on touch devices */
+    .card-flying,
+    .card-clustering {
+        transition-duration: 0.3s;
+    }
+
+    .bg-particle {
+        animation-duration: 3s;
+    }
+}
+
+/* Keyboard Navigation */
+@media (hover: hover) {
+    .filter-btn:focus-visible,
+    .view-btn:focus-visible,
+    .alumni-card:focus-visible {
+        outline: 2px solid var(--secondary-color);
+        outline-offset: 2px;
+    }
+}
+
+/* Print Styles for Different Sizes */
+@media print and (max-width: 8.5in) {
+    .alumni-card {
+        width: 3.5in !important;
+        height: 4.5in !important;
+        margin: 0.25in !important;
+        page-break-inside: avoid;
+    }
+
+    .cards-container {
+        columns: 2;
+        column-gap: 0.5in;
+    }
+}
+
+@media print and (min-width: 11in) {
+    .cards-container {
+        columns: 3;
+        column-gap: 0.5in;
+    }
+
+    .alumni-card {
+        width: 3in !important;
+        height: 4in !important;
+    }
+}
+
+/* Accessibility - Large Text Support */
+@media (min-width: 768px) {
+    .large-text .alumni-name {
+        font-size: 1.5rem;
+    }
+
+    .large-text .current-role {
+        font-size: 1.2rem;
+    }
+
+    .large-text .company-name,
+    .large-text .location {
+        font-size: 1rem;
+    }
+
+    .large-text .alumni-card {
+        height: 400px;
+    }
+}
+
+/* Reduced Data Mode */
+@media (prefers-reduced-data: reduce) {
+    .bg-particle,
+    .morphing-shape,
+    .connection-lines {
+        display: none;
+    }
+
+    .alumni-card {
+        box-shadow: var(--shadow-sm);
+    }
+
+    .alumni-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+}
+
+/* Container Queries (Future-proofing) */
+@container (min-width: 400px) {
+    .alumni-card {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+@container (min-width: 600px) {
+    .cards-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@container (min-width: 900px) {
+    .cards-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@container (min-width: 1200px) {
+    .cards-container {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Flexible Grid System */
+.responsive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+}
+
+.responsive-grid .alumni-card {
+    position: static !important;
+    width: 100%;
+    margin: 0;
+    transform: none !important;
+}
+
+/* Utility Classes for Responsive Design */
+.mobile-only {
+    display: block;
+}
+
+.tablet-up {
+    display: none;
+}
+
+.desktop-only {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .mobile-only {
+        display: none;
+    }
+    
+    .tablet-up {
+        display: block;
+    }
+}
+
+@media (min-width: 992px) {
+    .desktop-only {
+        display: block;
+    }
+}
+
+/* Responsive Typography */
+.responsive-text {
+    font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+}
+
+.responsive-heading {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.responsive-subheading {
+    font-size: clamp(1.1rem, 3vw, 1.8rem);
+}
+
+/* Safe Area Insets for Notched Devices */
+@supports (padding: max(0px)) {
+    .header {
+        padding-left: max(var(--spacing-lg), env(safe-area-inset-left));
+        padding-right: max(var(--spacing-lg), env(safe-area-inset-right));
+    }
+
+    .main-content {
+        padding-left: max(var(--spacing-lg), env(safe-area-inset-left));
+        padding-right: max(var(--spacing-lg), env(safe-area-inset-right));
+        padding-bottom: max(var(--spacing-lg), env(safe-area-inset-bottom));
+    }
+
+    .notification-container {
+        top: max(var(--spacing-lg), env(safe-area-inset-top));
+        right: max(var(--spacing-lg), env(safe-area-inset-right));
+    }
+}
