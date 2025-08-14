@@ -2756,7 +2756,7 @@
                 <p class="tagline">Where LEADERS alumni connect, grow, and give back</p>
             </div>
             
-            <div class="search-container">
+            <div class="search-container" id="search-container" style="display: none;">
                 <div class="search-input-wrapper">
                     <input type="text" id="ai-search" class="search-input" placeholder="Search alumni by name, company, role, or expertise..." autocomplete="off" aria-label="Search alumni database">
                     <button class="voice-search-btn" id="voice-search" title="Voice search">
@@ -4722,9 +4722,11 @@
                 console.log('🏠 Showing home page');
                 const homePage = document.getElementById('home-page');
                 const alumniPage = document.getElementById('alumni-page');
+                const searchContainer = document.getElementById('search-container');
                 
                 if (homePage) homePage.style.display = 'block';
                 if (alumniPage) alumniPage.style.display = 'none';
+                if (searchContainer) searchContainer.style.display = 'none';
                 
                 // Update page title
                 document.title = 'LEADERS Alumni Association - Where LEADERS alumni connect, grow, and give back';
@@ -4737,9 +4739,11 @@
                 console.log('👥 Showing alumni page', { filterType, filterValue });
                 const homePage = document.getElementById('home-page');
                 const alumniPage = document.getElementById('alumni-page');
+                const searchContainer = document.getElementById('search-container');
                 
                 if (homePage) homePage.style.display = 'none';
                 if (alumniPage) alumniPage.style.display = 'block';
+                if (searchContainer) searchContainer.style.display = 'block';
                 
                 // Update page title
                 document.title = 'Explore Alumni - LEADERS Alumni Association';
