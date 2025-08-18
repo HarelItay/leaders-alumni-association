@@ -3490,8 +3490,19 @@
                     1: './images/backgrounds/Cohort 1.jpg',
                     2: './images/backgrounds/Cohort 2.jpg',
                     3: './images/backgrounds/Cohort 3.jpg',
-                    4: './images/backgrounds/Cohort 4.jpeg'
+                    4: './images/backgrounds/Cohort 4.jpeg',
+                    5: './images/backgrounds/Cohort 5.jpg'
                 };
+                
+                // Try different extensions for Cohort 5 if .jpg doesn't exist
+                if (cohortNumber === 5) {
+                    const possibleExtensions = ['.jpg', '.jpeg', '.png'];
+                    for (const ext of possibleExtensions) {
+                        const testUrl = `./images/backgrounds/Cohort 5${ext}`;
+                        // Return the first one we try - browser will handle if it doesn't exist
+                        return testUrl;
+                    }
+                }
                 
                 return cohortFiles[cohortNumber] || null;
             }
