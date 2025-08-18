@@ -5134,10 +5134,10 @@
                     tile.className = 'alumni-card cluster-select';
                     tile.innerHTML = `
                         <div class="card-content" style="${cohortBackgroundStyle}">
-                            <div class="card-body">
-                                <h3 class="alumni-name title" style="${cohortBackgroundStyle ? 'color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);' : ''}">${className}</h3>
+                            <div class="card-body" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; padding: 2rem;">
+                                <h3 class="alumni-name title" style="${cohortBackgroundStyle ? 'color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);' : ''} font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem;">${className}</h3>
                                 <div class="meta">
-                                    <span class="pill" style="${cohortBackgroundStyle ? 'background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);' : ''}">${alumni.length} alumni</span>
+                                    <span class="pill" style="${cohortBackgroundStyle ? 'background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);' : ''} font-size: 1.2rem; font-weight: 600; padding: 0.5rem 1rem;">${alumni.length} alumni</span>
                                 </div>
                             </div>
                         </div>
