@@ -138,6 +138,18 @@
             margin-bottom: 0.25rem;
         }
 
+        .logo-image {
+            height: 60px;
+            width: auto;
+            max-width: 300px;
+            margin-bottom: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-image:hover {
+            transform: scale(1.05);
+        }
+
         .logo-subtitle {
             color: #00C2A8;
             font-weight: 600;
@@ -2532,6 +2544,11 @@
                 gap: 1rem;
             }
 
+            .logo-image {
+                height: 50px;
+                max-width: 250px;
+            }
+
             .cards-container {
                 grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
                 gap: 1rem;
@@ -2749,10 +2766,7 @@
     <header class="header">
         <div class="header-content">
             <div class="logo" onclick="window.alumniApp?.showHomePage()" style="cursor: pointer;">
-                <h1>
-                    <span class="logo-text">LEADERS</span>
-                    <span class="logo-subtitle">Alumni Association</span>
-                </h1>
+                <img src="./images/companies/Leaders Alumni_full color.svg" alt="LEADERS Alumni Association" class="logo-image">
                 <p class="tagline">Where LEADERS alumni connect, grow, and give back</p>
             </div>
             
