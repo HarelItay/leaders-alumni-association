@@ -3476,7 +3476,29 @@
                 
                 // Default placeholder for anything else
                 return `<div class="photo-placeholder">📷</div>`;
-            }
+            },
+
+            getCohortImageUrl(graduationYear) {
+                if (!graduationYear) return null;
+                
+                // Map graduation year to cohort number
+                // 2021 = cohort 1, 2022 = cohort 2, etc.
+                const cohortNumber = graduationYear - 2020;
+                
+                if (cohortNumber >= 1 && cohortNumber <= 10) { // Assuming max 10 cohorts
+                    return `./images/backgrounds/cohort${cohortNumber}.jpg`;
+                }
+                
+                return null;
+            },
+
+            getCohortBackgroundStyle(graduationYear) {
+                const imageUrl = this.getCohortImageUrl(graduationYear);
+                if (imageUrl) {
+                    return `background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${imageUrl}'); background-size: cover; background-position: center; color: white;`;
+                }
+                return '';
+            },
 
             async createEnhancedFallbackData() {
                 // If CSV fails, try to load it directly as fallback
@@ -5008,18 +5030,20 @@
 
                 const entries = Object.entries(classClusters);
                 entries.forEach(([className, alumni], groupIndex) => {
-                    // Create clean class year card
+                    // Create clean class year card with cohort background
+                    const graduationYear = parseInt(className.replace('Class of ', ''));
+                    const cohortBackgroundStyle = this.getCohortBackgroundStyle(graduationYear);
                     const tile = document.createElement('div');
                     tile.className = 'alumni-card cluster-select';
                     tile.innerHTML = `
-                        <div class="card-content">
+                        <div class="card-content" style="${cohortBackgroundStyle}">
                             <div class="card-header">
-                                <div class="profile-photo ${this.getClassColorByYear(parseInt(className.replace('Class of ','')))}">${this.renderPhoto('')}</div>
+                                <div class="profile-photo ${this.getClassColorByYear(graduationYear)}">${this.renderPhoto('')}</div>
                             </div>
                             <div class="card-body">
-                                <h3 class="alumni-name title">${className}</h3>
+                                <h3 class="alumni-name title" style="${cohortBackgroundStyle ? 'color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);' : ''}">${className}</h3>
                                 <div class="meta">
-                                    <span class="pill">${alumni.length} alumni</span>
+                                    <span class="pill" style="${cohortBackgroundStyle ? 'background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);' : ''}">${alumni.length} alumni</span>
                                 </div>
                             </div>
                         </div>
