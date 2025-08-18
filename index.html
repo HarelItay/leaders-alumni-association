@@ -3476,7 +3476,7 @@
                 
                 // Default placeholder for anything else
                 return `<div class="photo-placeholder">📷</div>`;
-            },
+            }
 
             getCohortImageUrl(graduationYear) {
                 if (!graduationYear) return null;
@@ -3494,7 +3494,7 @@
                 };
                 
                 return cohortFiles[cohortNumber] || null;
-            },
+            }
 
             getCohortBackgroundStyle(graduationYear) {
                 const imageUrl = this.getCohortImageUrl(graduationYear);
@@ -3502,7 +3502,100 @@
                     return `background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${imageUrl}'); background-size: cover; background-position: center; color: white;`;
                 }
                 return '';
-            },
+            }
+
+            async createEnhancedFallbackData() {
+                // If CSV fails, try to load it directly as fallback
+                console.log('⚠️ Creating fallback data - CSV loading must have failed');
+                try {
+                    // Try one more time to load CSV directly
+                    const response = await fetch('data/alumni.csv');
+                    if (response.ok) {
+                        const csvText = await response.text();
+                        const csvData = this.parseCSV(csvText);
+                        if (csvData.length > 0) {
+                            console.log('✅ Fallback: Successfully loaded CSV on second try');
+                            return csvData;
+                        }
+                    }
+                } catch (error) {
+                    console.log('⚠️ Fallback CSV attempt also failed:', error);
+                }
+                
+                // If still no luck, return your real alumni as hardcoded fallback
+                console.log('📝 Using hardcoded alumni data as final fallback');
+                return [
+                    {
+                        id: "alumni_001",
+                        personal: { 
+                            name: "Adi Ben Nun", 
+                            photo: "👨‍💻", 
+                            graduation_year: 2024,
+                            degree: "Computer Science",
+                            location: { city: "Tel Aviv", country: "Israel" }
+                        },
+                        professional: { 
+                            current_role: "Software Engineer Intern", 
+                            company: "Microsoft", 
+                            industry: "technology",
+                            experience_level: "junior",
+                            expertise_tags: ["Software Development", "Programming"]
+                        },
+                        networking: { 
+                            goals: ["mentorship", "skill development"],
+                            offering: ["coding help", "technical guidance"],
+                            availability: "available" 
+                        },
+                        summit_2025: { attending: true, arrival_date: "2025-06-15" }
+                    },
+                    {
+                        id: "alumni_002",
+                        personal: { 
+                            name: "Adi Nechemia", 
+                            photo: "👨‍💼", 
+                            graduation_year: 2021,
+                            degree: "Computer Science",
+                            location: { city: "Tel Aviv", country: "Israel" }
+                        },
+                        professional: { 
+                            current_role: "Managing Director", 
+                            company: "8200 For Startups by EISP", 
+                            industry: "technology",
+                            experience_level: "senior",
+                            expertise_tags: ["Startup Management", "Technology Leadership"]
+                        },
+                        networking: { 
+                            goals: ["partnerships", "mentorship"],
+                            offering: ["business guidance", "network access"],
+                            availability: "available" 
+                        },
+                        summit_2025: { attending: true, arrival_date: "2025-06-14" }
+                    },
+                    {
+                        id: "alumni_003",
+                        personal: { 
+                            name: "Amir Gordon", 
+                            photo: "👨‍💻", 
+                            graduation_year: 2024,
+                            degree: "Computer Science",
+                            location: { city: "Cupertino", country: "USA" }
+                        },
+                        professional: { 
+                            current_role: "Software Developer", 
+                            company: "Apple", 
+                            industry: "technology",
+                            experience_level: "junior",
+                            expertise_tags: ["iOS Development", "Software Engineering"]
+                        },
+                        networking: { 
+                            goals: ["skill development", "networking"],
+                            offering: ["technical mentoring", "code review"],
+                            availability: "available" 
+                        },
+                        summit_2025: { attending: true, arrival_date: "2025-06-16" }
+                    }
+                ];
+            }
 
             async createEnhancedFallbackData() {
                 // If CSV fails, try to load it directly as fallback
