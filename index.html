@@ -3485,11 +3485,15 @@
                 // 2021 = cohort 1, 2022 = cohort 2, etc.
                 const cohortNumber = graduationYear - 2020;
                 
-                if (cohortNumber >= 1 && cohortNumber <= 10) { // Assuming max 10 cohorts
-                    return `./images/backgrounds/cohort${cohortNumber}.jpg`;
-                }
+                // Handle the actual uploaded filenames
+                const cohortFiles = {
+                    1: './images/backgrounds/Cohort 1.jpg',
+                    2: './images/backgrounds/Cohort 2.jpg', 
+                    3: './images/backgrounds/Cohort 3.jpg',
+                    4: './images/backgrounds/Cohort 4.jpeg'
+                };
                 
-                return null;
+                return cohortFiles[cohortNumber] || null;
             },
 
             getCohortBackgroundStyle(graduationYear) {
