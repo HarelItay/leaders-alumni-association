@@ -3440,8 +3440,19 @@
                 // Debug logging
                 console.log(`🖼️ renderPhoto called for: "${alumniName}" with photo: "${photo}"`);
                 
-                // If no photo or empty, try to find local profile image
-                if (!photo || photo.trim() === '') {
+                // Check if photo is empty, null, undefined, or contains placeholder values
+                const isEmpty = !photo || 
+                               photo.trim() === '' || 
+                               photo === 'null' || 
+                               photo === 'undefined' || 
+                               photo === '📷' ||
+                               photo.includes('photo-placeholder') ||
+                               photo.trim() === '👤';
+                
+                console.log(`🔍 Photo empty check for "${alumniName}": ${isEmpty} (photo: "${photo}")`);
+                
+                // If no valid photo, try to find local profile image
+                if (isEmpty) {
                     const localImageUrl = this.getLocalProfileImage(alumniName);
                     console.log(`🔍 Local image URL for "${alumniName}": ${localImageUrl}`);
                     if (localImageUrl) {
@@ -3484,7 +3495,14 @@
                     return `<img src="${processedPhoto}${separator}cb=${Date.now()}" alt="Profile Photo" onload="this.style.opacity=1" onerror="this.outerHTML='<div class=\\'photo-placeholder\\'>📷</div>'" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; opacity: 0; transition: opacity 0.3s ease;">`;
                 }
                 
-                // Default placeholder for anything else
+                // Default placeholder for anything else - but try local image first
+                console.log(`⚠️ Photo "${photo}" for "${alumniName}" is not a valid URL, trying local image as fallback`);
+                const localImageUrl = this.getLocalProfileImage(alumniName);
+                if (localImageUrl) {
+                    console.log(`✅ Using local image as final fallback for "${alumniName}": ${localImageUrl}`);
+                    return `<img src="${localImageUrl}" alt="${alumniName} Profile" onload="this.style.opacity=1; console.log('✅ Local fallback image loaded: ${localImageUrl}')" onerror="console.log('❌ Local fallback image failed: ${localImageUrl}'); this.outerHTML='<div class=\\'photo-placeholder\\'>📷</div>'" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; opacity: 0; transition: opacity 0.3s ease;">`;
+                }
+                console.log(`📷 Final fallback: showing placeholder for "${alumniName}"`);
                 return `<div class="photo-placeholder">📷</div>`;
             }
 
