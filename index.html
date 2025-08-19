@@ -11,7 +11,7 @@
     </script>
     
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1200, initial-scale=0.5, user-scalable=yes">
+    <meta name="viewport" content="width=1200, initial-scale=0.5, user-scalable=yes" id="viewport-meta">
     <title>LEADERS Alumni Association - Where LEADERS alumni connect, grow, and give back</title>
     <meta name="description" content="Join the LEADERS Alumni Association to connect with peers, discover events, find mentorship opportunities, and unlock your potential in a lifelong network.">
     <meta name="keywords" content="LEADERS alumni, networking, mentorship, career opportunities, professional development">
@@ -4936,6 +4936,23 @@
                 return;
             }
 
+            // Viewport Management Functions
+            setMobileResponsiveViewport() {
+                const viewport = document.getElementById('viewport-meta');
+                if (viewport) {
+                    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
+                    console.log('📱 Switched to mobile-responsive viewport');
+                }
+            }
+            
+            setDesktopFixedViewport() {
+                const viewport = document.getElementById('viewport-meta');
+                if (viewport) {
+                    viewport.setAttribute('content', 'width=1200, initial-scale=0.5, user-scalable=yes');
+                    console.log('🖥️ Switched to desktop-fixed viewport');
+                }
+            }
+
             // Page Navigation Functions
             showHomePage() {
                 console.log('🏠 Showing home page');
@@ -4946,6 +4963,9 @@
                 if (homePage) homePage.style.display = 'block';
                 if (alumniPage) alumniPage.style.display = 'none';
                 if (searchContainer) searchContainer.style.display = 'none';
+                
+                // Switch to mobile-responsive for home page
+                this.setMobileResponsiveViewport();
                 
                 // Update page title
                 document.title = 'LEADERS Alumni Association - Where LEADERS alumni connect, grow, and give back';
@@ -5202,6 +5222,9 @@
                 const container = this.elements.cardsContainer;
                 if (!container) return;
                 
+                // Switch to desktop-fixed viewport for clustering
+                this.setDesktopFixedViewport();
+                
                 // Add clustering class
                 container.classList.add('clustering');
                 const classClusters = this.groupAlumniByClass();
@@ -5309,6 +5332,9 @@
                     return;
                 }
                 
+                // Switch to desktop-fixed viewport for clustering
+                this.setDesktopFixedViewport();
+                
                 // Add clustering class
                 container.classList.add('clustering');
                 console.log('🎓 About to call groupAlumniByDegreeCategories...');
@@ -5396,6 +5422,9 @@
                     console.error('🏢 No container found!');
                     return;
                 }
+                
+                // Switch to desktop-fixed viewport for clustering
+                this.setDesktopFixedViewport();
                 
                 // Add clustering class
                 container.classList.add('clustering');
