@@ -3512,26 +3512,30 @@
             getLocalProfileImage(alumniName) {
                 if (!alumniName || alumniName.trim() === '') return null;
                 
-                // Clean the name for filename matching
-                const cleanName = alumniName.trim()
-                    .toLowerCase()
-                    .replace(/[^a-z0-9\s]/g, '') // Remove special characters
-                    .replace(/\s+/g, '-'); // Replace spaces with hyphens
+                // Exact mapping for uploaded profile images
+                const profileImageMap = {
+                    'Shai Turjeman': './images/profiles/Shai Turjeman.png',
+                    'Shani Dabul': './images/profiles/Shani Dabul.jpeg',
+                    'Shiri Rosenman': './images/profiles/Shiri Rosenman.png',
+                    'Yael Agur Orgal': './images/profiles/Yael Agur Orgal.png',
+                    'Yonatan Ben Gur': './images/profiles/Yonatan Ben Gur.png',
+                    'Yotam Naor': './images/profiles/Yotam Naor.png',
+                    'Yuval Zohar': './images/profiles/Yuval Zohar.png'
+                };
                 
-                // Common image extensions to try
-                const extensions = ['jpg', 'jpeg', 'png', 'webp'];
+                // Try exact name match first
+                const exactMatch = profileImageMap[alumniName.trim()];
+                if (exactMatch) return exactMatch;
                 
-                // Try different filename formats
-                const possibleFilenames = [
-                    cleanName, // john-doe
-                    cleanName.replace(/-/g, ''), // johndoe
-                    cleanName.replace(/-/g, '_'), // john_doe
-                    alumniName.trim().replace(/\s+/g, '-').toLowerCase(), // preserve original case conversion
-                ];
+                // Try case-insensitive match
+                const lowerName = alumniName.trim().toLowerCase();
+                for (const [name, path] of Object.entries(profileImageMap)) {
+                    if (name.toLowerCase() === lowerName) {
+                        return path;
+                    }
+                }
                 
-                // For now, return the most likely filename format
-                // The browser will handle 404s gracefully with the onerror handler
-                return `./images/profiles/${cleanName}.jpg`;
+                return null; // No local image found
             }
 
             async createEnhancedFallbackData() {
