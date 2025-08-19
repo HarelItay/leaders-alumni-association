@@ -5331,9 +5331,9 @@
                                     <span class="degree-category-icon">⚙️</span>
                                     <span>Engineering</span>
                                 </button>
-                                <button class="degree-category-btn" data-category="Direct Sciences">
+                                <button class="degree-category-btn" data-category="Life and Health Sciences">
                                     <span class="degree-category-icon">🔬</span>
-                                    <span>Direct Sciences</span>
+                                    <span>Life and Health Sciences</span>
                                 </button>
                                 <button class="degree-category-btn" data-category="Management">
                                     <span class="degree-category-icon">💼</span>
@@ -5461,7 +5461,7 @@
             groupAlumniByDegreeCategories() {
                 const categories = {
                     'Engineering': { alumni: [], subcategories: {} },
-                    'Direct Sciences': { alumni: [], subcategories: {} },
+                    'Life and Health Sciences': { alumni: [], subcategories: {} },
                     'Management': { alumni: [], subcategories: {} },
                     'Social Studies': { alumni: [], subcategories: {} }
                 };
@@ -5537,13 +5537,19 @@
                     return 'Engineering';
                 }
                 
-                // Direct Sciences keywords
-                if (lowerDegree.includes('science') || lowerDegree.includes('biology') ||
-                    lowerDegree.includes('chemistry') || lowerDegree.includes('physics') ||
-                    lowerDegree.includes('mathematics') || lowerDegree.includes('math') ||
-                    lowerDegree.includes('medical') || lowerDegree.includes('medicine') ||
+                // Life and Health Sciences keywords
+                if (lowerDegree.includes('biology') || lowerDegree.includes('chemistry') ||
+                    lowerDegree.includes('physics') || lowerDegree.includes('mathematics') ||
+                    lowerDegree.includes('math') || lowerDegree.includes('medical') ||
+                    lowerDegree.includes('medicine') || lowerDegree.includes('health') ||
+                    lowerDegree.includes('nursing') || lowerDegree.includes('pharmacy') ||
+                    lowerDegree.includes('biomedical') || lowerDegree.includes('biochemistry') ||
+                    lowerDegree.includes('microbiology') || lowerDegree.includes('neuroscience') ||
+                    lowerDegree.includes('genetics') || lowerDegree.includes('anatomy') ||
+                    lowerDegree.includes('physiology') || lowerDegree.includes('pathology') ||
+                    lowerDegree.includes('veterinary') || lowerDegree.includes('dentistry') ||
                     lowerDegree.includes('research') || lowerDegree.includes('lab')) {
-                    return 'Direct Sciences';
+                    return 'Life and Health Sciences';
                 }
                 
                 // Management keywords  
@@ -5561,7 +5567,9 @@
                     lowerDegree.includes('political') || lowerDegree.includes('law') ||
                     lowerDegree.includes('education') || lowerDegree.includes('teaching') ||
                     lowerDegree.includes('literature') || lowerDegree.includes('arts') ||
-                    lowerDegree.includes('philosophy') || lowerDegree.includes('language')) {
+                    lowerDegree.includes('philosophy') || lowerDegree.includes('language') ||
+                    lowerDegree.includes('anthropology') || lowerDegree.includes('geography') ||
+                    lowerDegree.includes('communication') || lowerDegree.includes('journalism')) {
                     return 'Social Studies';
                 }
                 
@@ -5577,7 +5585,7 @@
                         icon: '⚙️',
                         subIcon: '🔧'
                     },
-                    'Direct Sciences': {
+                    'Life and Health Sciences': {
                         gradient: 'linear-gradient(135deg, #3498DB 0%, #2980B9 100%)',
                         lightGradient: 'linear-gradient(135deg, #85C1E9 0%, #3498DB 100%)',
                         icon: '🔬',
