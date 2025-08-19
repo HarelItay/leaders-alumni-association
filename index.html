@@ -3436,9 +3436,13 @@
                 return tags.length > 0 ? tags : ['Professional Development'];
             }
 
-            renderPhoto(photo) {
-                // If no photo or empty, show placeholder
+            renderPhoto(photo, alumniName = '') {
+                // If no photo or empty, try to find local profile image
                 if (!photo || photo.trim() === '') {
+                    const localImageUrl = this.getLocalProfileImage(alumniName);
+                    if (localImageUrl) {
+                        return `<img src="${localImageUrl}" alt="${alumniName} Profile" onload="this.style.opacity=1" onerror="this.outerHTML='<div class=\\'photo-placeholder\\'>📷</div>'" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; opacity: 0; transition: opacity 0.3s ease;">`;
+                    }
                     return `<div class="photo-placeholder">📷</div>`;
                 }
                 
@@ -3503,6 +3507,31 @@
                     return `background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${imageUrl}'); background-size: cover; background-position: center; color: white;`;
                 }
                 return '';
+            }
+
+            getLocalProfileImage(alumniName) {
+                if (!alumniName || alumniName.trim() === '') return null;
+                
+                // Clean the name for filename matching
+                const cleanName = alumniName.trim()
+                    .toLowerCase()
+                    .replace(/[^a-z0-9\s]/g, '') // Remove special characters
+                    .replace(/\s+/g, '-'); // Replace spaces with hyphens
+                
+                // Common image extensions to try
+                const extensions = ['jpg', 'jpeg', 'png', 'webp'];
+                
+                // Try different filename formats
+                const possibleFilenames = [
+                    cleanName, // john-doe
+                    cleanName.replace(/-/g, ''), // johndoe
+                    cleanName.replace(/-/g, '_'), // john_doe
+                    alumniName.trim().replace(/\s+/g, '-').toLowerCase(), // preserve original case conversion
+                ];
+                
+                // For now, return the most likely filename format
+                // The browser will handle 404s gracefully with the onerror handler
+                return `./images/profiles/${cleanName}.jpg`;
             }
 
             async createEnhancedFallbackData() {
@@ -4425,7 +4454,7 @@
                 return `
                     <div class="card-content">
                         <div class="card-header">
-                            <div class="profile-photo ${this.getClassColorByYear(personal.graduation_year)}">${this.renderPhoto(personal.photo)}</div>
+                            <div class="profile-photo ${this.getClassColorByYear(personal.graduation_year)}">${this.renderPhoto(personal.photo, personal.name)}</div>
                         </div>
                         
                         <div class="card-body">
@@ -4550,7 +4579,7 @@
                 return `
                     <div class="detail-modal">
                         <div class="detail-header">
-                                                         <div class="detail-photo">${this.renderPhoto(personal.photo)}</div>
+                                                         <div class="detail-photo">${this.renderPhoto(personal.photo, personal.name)}</div>
                             <div class="detail-info">
                                 <h2>${personal.name}</h2>
                                 <p class="detail-role">${professional.current_role} at ${professional.company}</p>
@@ -4635,7 +4664,7 @@
                                 <div class="network-alumni-card" id="selectedAlumniCard">
                                     <div class="profile-section">
                                         <div class="profile-photo" id="selectedAlumniPhoto">
-                                            ${this.renderPhoto(personal.photo)}
+                                            ${this.renderPhoto(personal.photo, personal.name)}
                                         </div>
                                         <div class="profile-info">
                                             <h3 id="selectedAlumniName">${personal.name}</h3>
@@ -6053,7 +6082,7 @@
                 
                 card.innerHTML = `
                     <div class="card-photo">
-                        ${this.renderPhoto(personal.photo) || '👤'}
+                        ${this.renderPhoto(personal.photo, alumniNode.name) || '👤'}
                     </div>
                     <div class="card-name">${alumniNode.name}</div>
                     <div class="card-role">${professional.current_role || 'Professional'}</div>
@@ -6667,7 +6696,7 @@
                 return `
                     <div class="card-content">
                         <div class="card-header">
-                            <div class="profile-photo ${this.getClassColorByYear(graduationYear)}">${this.renderPhoto(photo)}</div>
+                            <div class="profile-photo ${this.getClassColorByYear(graduationYear)}">${this.renderPhoto(photo, name)}</div>
                         </div>
                         
                         <div class="card-body">
@@ -6799,7 +6828,7 @@
                 
                 if (nameElement) nameElement.textContent = personal.name;
                 if (roleElement) roleElement.textContent = professional.current_role || 'Role not specified';
-                if (photoElement) photoElement.innerHTML = this.renderPhoto(personal.photo);
+                if (photoElement) photoElement.innerHTML = this.renderPhoto(personal.photo, personal.name);
                 
                 // Update details section
                 const detailsElement = document.getElementById('selectedAlumniDetails');
