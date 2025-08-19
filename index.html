@@ -3437,12 +3437,18 @@
             }
 
             renderPhoto(photo, alumniName = '') {
+                // Debug logging
+                console.log(`🖼️ renderPhoto called for: "${alumniName}" with photo: "${photo}"`);
+                
                 // If no photo or empty, try to find local profile image
                 if (!photo || photo.trim() === '') {
                     const localImageUrl = this.getLocalProfileImage(alumniName);
+                    console.log(`🔍 Local image URL for "${alumniName}": ${localImageUrl}`);
                     if (localImageUrl) {
-                        return `<img src="${localImageUrl}" alt="${alumniName} Profile" onload="this.style.opacity=1" onerror="this.outerHTML='<div class=\\'photo-placeholder\\'>📷</div>'" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; opacity: 0; transition: opacity 0.3s ease;">`;
+                        console.log(`✅ Using local image for "${alumniName}": ${localImageUrl}`);
+                        return `<img src="${localImageUrl}" alt="${alumniName} Profile" onload="this.style.opacity=1; console.log('✅ Local image loaded: ${localImageUrl}')" onerror="console.log('❌ Local image failed: ${localImageUrl}'); this.outerHTML='<div class=\\'photo-placeholder\\'>📷</div>'" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; opacity: 0; transition: opacity 0.3s ease;">`;
                     }
+                    console.log(`📷 No local image found for "${alumniName}", showing placeholder`);
                     return `<div class="photo-placeholder">📷</div>`;
                 }
                 
@@ -3510,7 +3516,11 @@
             }
 
             getLocalProfileImage(alumniName) {
-                if (!alumniName || alumniName.trim() === '') return null;
+                console.log(`🔍 getLocalProfileImage called with: "${alumniName}"`);
+                if (!alumniName || alumniName.trim() === '') {
+                    console.log(`❌ Empty alumni name provided`);
+                    return null;
+                }
                 
                 // Exact mapping for uploaded profile images
                 const profileImageMap = {
@@ -3523,18 +3533,28 @@
                     'Yuval Zohar': './images/profiles/Yuval Zohar.png'
                 };
                 
+                console.log(`🗂️ Available profiles: ${Object.keys(profileImageMap).join(', ')}`);
+                
                 // Try exact name match first
-                const exactMatch = profileImageMap[alumniName.trim()];
-                if (exactMatch) return exactMatch;
+                const trimmedName = alumniName.trim();
+                console.log(`🔍 Trying exact match for: "${trimmedName}"`);
+                const exactMatch = profileImageMap[trimmedName];
+                if (exactMatch) {
+                    console.log(`✅ Exact match found: "${trimmedName}" → ${exactMatch}`);
+                    return exactMatch;
+                }
                 
                 // Try case-insensitive match
-                const lowerName = alumniName.trim().toLowerCase();
+                const lowerName = trimmedName.toLowerCase();
+                console.log(`🔍 Trying case-insensitive match for: "${lowerName}"`);
                 for (const [name, path] of Object.entries(profileImageMap)) {
                     if (name.toLowerCase() === lowerName) {
+                        console.log(`✅ Case-insensitive match found: "${name}" → ${path}`);
                         return path;
                     }
                 }
                 
+                console.log(`❌ No local image found for: "${alumniName}"`);
                 return null; // No local image found
             }
 
