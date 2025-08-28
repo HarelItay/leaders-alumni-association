@@ -7130,7 +7130,8 @@
     <script>
         // MOBILE POPUP LAYOUT HANDLER
         function setupMobileLayout() {
-            if (window.innerWidth <= 575) {
+            console.log(`📱 Screen width: ${window.innerWidth}px - ${window.innerWidth <= 768 ? 'MOBILE' : 'DESKTOP'} mode`);
+            if (window.innerWidth <= 768) {
                 // Watch for modal opens
                 const observer = new MutationObserver(function(mutations) {
                     mutations.forEach(function(mutation) {
@@ -7138,6 +7139,7 @@
                         const modalBody = document.querySelector('.modal-overlay.visible .modal-content .modal-body');
                         
                         if (modal && modalBody) {
+                            console.log('📱 Applying mobile layout to modal');
                             // Make modal full screen on mobile
                             modal.style.width = '95vw';
                             modal.style.height = '90vh';
@@ -7177,6 +7179,8 @@
                     attributes: true,
                     attributeFilter: ['class']
                 });
+            } else {
+                console.log('🖥️ Desktop mode - using standard modal layout');
             }
         }
         
