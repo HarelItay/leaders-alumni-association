@@ -7575,11 +7575,18 @@
                             
                             // Hide the original larger content, only show our mini version
                             const children = modalBody.children;
-                            for (let i = 0; i < children.length; i++) {
-                                const child = children[i];
-                                // Hide everything except our mini network modal
-                                if (!child.classList.contains('mobile-network-modal')) {
-                                    child.style.display = 'none';
+                            
+                            // Check if this is a company popup - if so, don't hide the network-modal
+                            const isCompanyPopup = modalBody.querySelector('.network-modal #selectedAlumniDetails .detail-item .icon')?.textContent?.includes('🏭') && 
+                                                  modalBody.querySelector('.network-modal #selectedAlumniDetails .detail-item .icon')?.textContent?.includes('👥');
+                            
+                            if (!isCompanyPopup) {
+                                for (let i = 0; i < children.length; i++) {
+                                    const child = children[i];
+                                    // Hide everything except our mini network modal
+                                    if (!child.classList.contains('mobile-network-modal')) {
+                                        child.style.display = 'none';
+                                    }
                                 }
                             }
                             
@@ -7618,30 +7625,13 @@
             const currentAlumni = currentAlumniName ? allAlumni.find(a => a.personal?.name === currentAlumniName) : allAlumni[0];
             
             // Check if this is a company popup by looking for company-specific elements
-            const isCompanyPopup = modalBody.querySelector('#selectedAlumniDetails .detail-item .icon')?.textContent?.includes('🏭') && 
-                                  modalBody.querySelector('#selectedAlumniDetails .detail-item .icon')?.textContent?.includes('👥');
+            const isCompanyPopup = modalBody.querySelector('.network-modal #selectedAlumniDetails .detail-item .icon')?.textContent?.includes('🏭') && 
+                                  modalBody.querySelector('.network-modal #selectedAlumniDetails .detail-item .icon')?.textContent?.includes('👥');
             
             if (isCompanyPopup) {
-                // For company popups, show the alumni cards from the connected-alumni-cards container
-                const companyAlumniCards = modalBody.querySelectorAll('.connected-alumni-card');
-                if (companyAlumniCards.length > 0) {
-                    // Company popup already has the right layout, just ensure mobile styling
-                    const connectedCardsContainer = modalBody.querySelector('.connected-alumni-cards');
-                    if (connectedCardsContainer) {
-                        connectedCardsContainer.style.cssText = `
-                            display: flex;
-                            flex-wrap: wrap;
-                            gap: 8px;
-                            margin: 0;
-                            padding: 12px;
-                            width: 100%;
-                            align-content: flex-start;
-                            justify-content: flex-start;
-                            position: relative;
-                        `;
-                    }
-                    return; // Don't create additional mobile layout for company popups
-                }
+                console.log('🏢 Company popup detected - using existing layout');
+                // For company popups, the layout is already correct, just return
+                return;
             }
             
             // Create EXACT desktop structure but miniaturized
