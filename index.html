@@ -4927,6 +4927,9 @@
                     
                     // Clean up any network visualization
                     this.cleanupNetworkVisualization();
+                    
+                    // Clear company alumni reference
+                    this.currentCompanyAlumni = undefined;
                 }
             }
 
@@ -5725,27 +5728,143 @@
             showCompanyAlumniPopup(companyName, alumni) {
                 console.log(`🏢 Showing alumni for company: ${companyName}`);
                 
-                // Create a company object to pass to the network modal
-                const companyData = {
+                // Store the company alumni FIRST - before any modal operations
+                this.currentCompanyAlumni = alumni;
+                
+                // Create a fake alumni object representing the company to use the EXACT same system
+                const companyAlumni = {
+                    id: `company_${companyName}`,
                     personal: {
                         name: companyName,
-                        photo: '🏢'
+                        photo: alumni[0]?.professional?.company_logo_url || '🏢',
+                        graduation_year: '', // Leave empty for company
+                        degree: '', // Leave empty for company  
+                        location: { city: '', country: '' }
                     },
                     professional: {
-                        company: companyName,
+                        current_role: alumni[0]?.professional?.industry || 'Technology', // Show industry as role
+                        company: `${alumni.length} Alumni`, // Show alumni count as company
                         company_logo_url: alumni[0]?.professional?.company_logo_url || '',
-                        current_role: `${alumni.length} Alumni`,
-                        industry: alumni[0]?.professional?.industry || 'Not specified'
+                        industry: alumni[0]?.professional?.industry || 'Not specified',
+                        experience_level: '',
+                        expertise_tags: []
+                    },
+                    networking: {
+                        goals: [`Connect with ${alumni.length} alumni from ${companyName}`],
+                        offering: ['Industry expertise', 'Professional networking'],
+                        availability: 'available'
+                    },
+                    summit_2025: {
+                        attending: false,
+                        arrival_date: ''
+                    },
+                    social: {
+                        linkedin: ''
                     }
                 };
                 
-                const content = this.generateCompanyNetworkModalContent(companyData, alumni);
-                this.showNetworkModal('Company Network', content, companyData, false);
+                // Use the EXACT same system as normal alumni popup
+                const content = this.generateNetworkModalContent(companyAlumni);
+                this.showNetworkModal('Company Network', content, companyAlumni, false); // Set showConnections to FALSE for company popups
                 
-                // Initialize company alumni visualization
-                setTimeout(() => {
-                    this.initializeCompanyAlumniVisualization(companyData, alumni);
-                }, 100);
+                // Skip desktop network initialization completely for company popups - mobile handles it
+                console.log('🏢 Skipping desktop network initialization for company popup');
+            },
+
+            initializeCompanyNetworkVisualization(companyAlumni, alumni) {
+                console.log('🏢 Initializing company network visualization');
+                console.log('🏢 Alumni count:', alumni.length);
+                
+                // Find the connected alumni cards container - try multiple selectors
+                let container = document.getElementById('connectedAlumniCards');
+                if (!container) {
+                    container = document.querySelector('.connected-alumni-cards');
+                }
+                if (!container) {
+                    container = document.querySelector('.network-right-panel');
+                }
+                
+                if (!container) {
+                    console.error('❌ Could not find alumni cards container');
+                    return;
+                }
+                
+                console.log('✅ Found container:', container.className);
+                
+                // Clear any existing content
+                container.innerHTML = '';
+                
+                // Create alumni cards exactly like in normal networking popup
+                alumni.forEach((alumniData, index) => {
+                    const personal = alumniData.personal || {};
+                    const professional = alumniData.professional || {};
+                    
+                    console.log(`🏢 Creating card ${index + 1}/${alumni.length} for:`, personal.name);
+                    
+                    const card = document.createElement('div');
+                    card.className = 'connected-alumni-card mobile-mini-card';
+                    
+                    // Use the EXACT mobile card styling from other clusters
+                    const cardStyle = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'; // Default purple gradient
+                    
+                    card.style.cssText = `
+                        width: calc(50% - 0.125rem);
+                        height: 220px;
+                        background: ${cardStyle};
+                        border-radius: 10px;
+                        padding: 12px;
+                        color: white;
+                        position: relative;
+                        cursor: pointer;
+                        transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+                        box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+                        border: 1px solid transparent;
+                        margin: 0;
+                        font-size: 0.75rem;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-between;
+                    `;
+                    
+                    card.innerHTML = `
+                        <!-- Photo at top -->
+                        <div style="display: flex; align-items: center; justify-content: center; margin-bottom: auto;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 1rem; overflow: hidden;">
+                                ${this.renderPhoto(personal.photo, personal.name) || '👤'}
+                            </div>
+                        </div>
+                        
+                        <!-- Complete alumni info with optimal spacing -->
+                        <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; min-height: 0;">
+                            <!-- Name -->
+                            <div class="card-name" style="font-size: 11px; font-weight: 700; line-height: 1.2; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">${personal.name || 'Anonymous'}</div>
+                            
+                            <!-- Current Role -->
+                            <div class="card-role" style="font-size: 9px; font-weight: 600; opacity: 0.95; line-height: 1.2; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${professional.current_role || 'Professional'}</div>
+                            
+                            <!-- Company (if different from current company) -->
+                            ${professional.company ? `<div style="font-size: 8px; font-weight: 500; opacity: 0.9; line-height: 1.2; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🏢 ${professional.company}</div>` : ''}
+                            
+                            <!-- Class Year -->
+                            ${personal.graduation_year ? `<div style="font-size: 8px; font-weight: 500; opacity: 0.9; line-height: 1.2; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🎓 Class ${personal.graduation_year}</div>` : ''}
+                            
+                            <!-- Degree -->
+                            ${personal.degree ? `<div style="font-size: 8px; font-weight: 500; opacity: 0.9; line-height: 1.2; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">📜 ${personal.degree}</div>` : ''}
+                            
+                            <!-- Industry -->
+                            ${professional.industry ? `<div style="font-size: 8px; font-weight: 500; opacity: 0.9; line-height: 1.2; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🏭 ${professional.industry}</div>` : ''}
+                        </div>
+                    `;
+                    
+                    // Add click handler to show full alumni profile
+                    card.addEventListener('click', () => {
+                        this.showDetailModal(alumniData);
+                    });
+                    
+                    container.appendChild(card);
+                });
+                
+                console.log(`✅ Created ${alumni.length} alumni cards in company popup`);
             },
 
             generateCompanyNetworkModalContent(companyData, alumni) {
@@ -7311,6 +7430,12 @@
             },
 
             updateSelectedAlumniCard(alumni) {
+                // Skip update if this is a company popup - keep the company data
+                if (this.currentCompanyAlumni) {
+                    console.log('🏢 Skipping alumni update - keeping company data in left panel');
+                    return;
+                }
+                
                 const personal = alumni.personal || {};
                 const professional = alumni.professional || {};
                 const summit = alumni.summit_2025 || {};
@@ -7524,6 +7649,122 @@
         }
     </script>
 
+    <!-- COMPANY MOBILE FUNCTIONS - GLOBAL SCOPE -->
+    <script>
+        // Function to display company alumni cards with mobile styling - GLOBAL SCOPE
+        window.displayMobileCompanyNetworkCards = function(filters = []) {
+            console.log('🏢 Displaying mobile company network cards');
+            
+            const cardsContainer = document.getElementById('mobileConnectedAlumniCards');
+            if (!cardsContainer) {
+                console.error('❌ Could not find mobileConnectedAlumniCards container');
+                return;
+            }
+            
+            cardsContainer.innerHTML = '';
+            
+            // Get company alumni from the app
+            const companyAlumni = window.alumniApp?.currentCompanyAlumni;
+            if (!companyAlumni || companyAlumni.length === 0) {
+                cardsContainer.innerHTML = '<div style="color: #666; text-align: center; padding: 1rem; font-size: 0.7rem;">No alumni data available</div>';
+                return;
+            }
+            
+            console.log(`🏢 Creating ${companyAlumni.length} mobile alumni cards`);
+            
+            // Create alumni cards with EXACT mobile styling
+            companyAlumni.forEach((alumniData, index) => {
+                const personal = alumniData.personal || {};
+                const professional = alumniData.professional || {};
+                
+                const cardStyle = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'; // Purple gradient like other clusters
+                
+                const card = document.createElement('div');
+                card.className = 'connected-alumni-card mobile-mini-card';
+                
+                card.style.cssText = `
+                    width: calc(50% - 0.125rem);
+                    height: 220px;
+                    background: ${cardStyle};
+                    border-radius: 10px;
+                    padding: 12px;
+                    color: white;
+                    position: relative;
+                    cursor: pointer;
+                    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+                    box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+                    border: 1px solid transparent;
+                    margin: 0;
+                    font-size: 0.75rem;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                `;
+                
+                card.innerHTML = `
+                    <!-- Photo at top -->
+                    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: auto;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 1rem; overflow: hidden;">
+                            ${personal.photo && personal.photo !== '👤' ? `<img src="${personal.photo}" style="width: 100%; height: 100%; object-fit: cover;">` : '👤'}
+                        </div>
+                    </div>
+                    
+                    <!-- Complete alumni info with optimal spacing -->
+                    <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; min-height: 0;">
+                        <!-- Name -->
+                        <div class="card-name" style="font-size: 11px; font-weight: 700; line-height: 1.2; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">${personal.name || 'Anonymous'}</div>
+                        
+                        <!-- Current Role -->
+                        <div class="card-role" style="font-size: 9px; font-weight: 600; opacity: 0.95; line-height: 1.2; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${professional.current_role || 'Professional'}</div>
+                        
+                        <!-- Company -->
+                        ${professional.company ? `<div style="font-size: 8px; font-weight: 500; opacity: 0.9; line-height: 1.2; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🏢 ${professional.company}</div>` : ''}
+                        
+                        <!-- Class Year -->
+                        ${personal.graduation_year ? `<div style="font-size: 8px; font-weight: 500; opacity: 0.9; line-height: 1.2; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🎓 Class ${personal.graduation_year}</div>` : ''}
+                        
+                        <!-- Degree -->
+                        ${personal.degree ? `<div style="font-size: 8px; font-weight: 500; opacity: 0.9; line-height: 1.2; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">📜 ${personal.degree}</div>` : ''}
+                        
+                        <!-- Industry -->
+                        ${professional.industry ? `<div style="font-size: 8px; font-weight: 500; opacity: 0.9; line-height: 1.2; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🏭 ${professional.industry}</div>` : ''}
+                    </div>
+                `;
+                
+                // Add click handler (EXACT COPY from working desktop mini cards line 7282)
+                card.addEventListener('click', () => {
+                    console.log(`🔥 ALUMNI CLICK: ${personal.name}`);
+                    console.log(`🔥 BEFORE: currentCompanyAlumni =`, window.alumniApp?.currentCompanyAlumni?.length);
+                    
+                    // AGGRESSIVELY CLEAR ALL COMPANY CONTEXT
+                    if (window.alumniApp) {
+                        window.alumniApp.currentCompanyAlumni = undefined;
+                        delete window.alumniApp.currentCompanyAlumni;
+                        console.log(`🔥 AFTER: currentCompanyAlumni =`, window.alumniApp?.currentCompanyAlumni);
+                        
+                        // Close current modal first
+                        if (window.alumniApp.closeModal) {
+                            window.alumniApp.closeModal();
+                            console.log(`🔥 CLOSED COMPANY MODAL`);
+                        }
+                        
+                        // Wait a bit then show alumni connections
+                        setTimeout(() => {
+                            console.log(`🔥 SHOWING ${personal.name}'S CONNECTIONS`);
+                            if (window.alumniApp.showDetailModal) {
+                                window.alumniApp.showDetailModal(alumniData, true);
+                            }
+                        }, 100);
+                    }
+                });
+                
+                cardsContainer.appendChild(card);
+            });
+            
+            console.log(`✅ Created ${companyAlumni.length} mobile company alumni cards`);
+        };
+    </script>
+
     <!-- MOBILE POPUP LAYOUT - JAVASCRIPT -->
     <script>
         // MOBILE POPUP LAYOUT HANDLER
@@ -7537,6 +7778,46 @@
                         const modalBody = document.querySelector('.modal-overlay.visible .modal-content .modal-body');
                         
                         if (modal && modalBody) {
+                            // Check if this is a company popup FIRST - skip ALL mobile layout for companies
+                            const isCompanyPopup = window.alumniApp?.currentCompanyAlumni !== undefined;
+                            
+                            if (isCompanyPopup) {
+                                console.log('🏢 Company popup detected - using MOBILE layout like other clusters');
+                                // For company popups, use the SAME mobile system as alumni popups
+                                modal.style.width = '95vw';
+                                modal.style.height = '90vh';
+                                modal.style.maxWidth = '95vw';
+                                modal.style.maxHeight = '90vh';
+                                modal.style.margin = '0';
+                                modal.style.borderRadius = '12px';
+                                
+                                // Make modal body vertical layout
+                                modalBody.style.display = 'flex';
+                                modalBody.style.flexDirection = 'column';
+                                modalBody.style.padding = '1rem';
+                                modalBody.style.overflowY = 'auto';
+                                modalBody.style.height = 'calc(100% - 60px)';
+                                
+                                // Hide the original larger content, only show our mini version
+                                const children = modalBody.children;
+                                
+                                console.log('📱 Mobile: Hiding content for company popup');
+                                for (let i = 0; i < children.length; i++) {
+                                    const child = children[i];
+                                    // Hide everything except our mini network modal
+                                    if (!child.classList.contains('mobile-network-modal')) {
+                                        child.style.display = 'none';
+                                    }
+                                }
+                                
+                                // Add mobile layout for company - same as alumni but with company data
+                                setTimeout(() => {
+                                    addMobileCompanySuggestionCards(modalBody);
+                                }, 100);
+                                
+                                return; // Skip all other mobile processing for companies
+                            }
+                            
                             console.log('📱 Applying mobile layout to modal');
                             // Make modal full screen on mobile
                             modal.style.width = '95vw';
@@ -7576,17 +7857,12 @@
                             // Hide the original larger content, only show our mini version
                             const children = modalBody.children;
                             
-                            // Check if this is a company popup - if so, don't hide the network-modal
-                            const isCompanyPopup = modalBody.querySelector('.network-modal #selectedAlumniDetails .detail-item .icon')?.textContent?.includes('🏭') && 
-                                                  modalBody.querySelector('.network-modal #selectedAlumniDetails .detail-item .icon')?.textContent?.includes('👥');
-                            
-                            if (!isCompanyPopup) {
-                                for (let i = 0; i < children.length; i++) {
-                                    const child = children[i];
-                                    // Hide everything except our mini network modal
-                                    if (!child.classList.contains('mobile-network-modal')) {
-                                        child.style.display = 'none';
-                                    }
+                            console.log('📱 Mobile: Hiding content for alumni popup');
+                            for (let i = 0; i < children.length; i++) {
+                                const child = children[i];
+                                // Hide everything except our mini network modal
+                                if (!child.classList.contains('mobile-network-modal')) {
+                                    child.style.display = 'none';
                                 }
                             }
                             
@@ -7609,6 +7885,122 @@
             }
         }
         
+        // Create MOBILE COMPANY VERSION - exactly like alumni but with company data
+        function addMobileCompanySuggestionCards(modalBody) {
+            console.log('🏢 Creating mobile company popup layout');
+            
+            // Check if we already added the mini desktop version
+            if (modalBody.querySelector('.mobile-network-modal')) return;
+            
+            // Get company data from the app
+            if (!window.alumniApp || !window.alumniApp.currentCompanyAlumni) return;
+            
+            const companyAlumni = window.alumniApp.currentCompanyAlumni;
+            if (!companyAlumni || companyAlumni.length === 0) return;
+            
+            // Get company info from the first alumni
+            const firstAlumni = companyAlumni[0];
+            const companyName = modalBody.querySelector('#selectedAlumniName')?.textContent || 'Company';
+            const companyLogo = firstAlumni?.professional?.company_logo_url || '🏢';
+            const industry = firstAlumni?.professional?.industry || 'Technology';
+            const alumniCount = companyAlumni.length;
+            
+            // Create the EXACT same mobile layout as alumni popups
+            const miniNetworkModal = document.createElement('div');
+            miniNetworkModal.className = 'mobile-network-modal';
+            miniNetworkModal.style.cssText = `
+                width: 100%; 
+                background: #f8fafc; 
+                border-radius: 8px; 
+                overflow: hidden; 
+                margin-top: 1rem;
+                font-size: 0.7rem;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+                transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            `;
+            
+            miniNetworkModal.innerHTML = `
+                <!-- MINI DESKTOP HEADER - scaled down -->
+                <div class="mobile-network-header" style="background: linear-gradient(135deg, #0B6BFF 0%, #00C2A8 100%); color: white; padding: 1rem; text-align: center; border-radius: 8px 8px 0 0;">
+                    <h2 style="margin: 0 0 0.25rem 0; font-size: 1rem; font-weight: 700;">${companyName}</h2>
+                    <p style="margin: 0 0 0.5rem 0; opacity: 0.9; font-size: 0.6rem;">Professional Network Connections</p>
+                    
+                    <!-- MINI FILTER BUTTONS - exact desktop functionality -->
+                    <div class="mobile-network-filters" style="display: flex; gap: 4px; justify-content: center; flex-wrap: wrap;">
+                        <button class="mobile-filter-btn" data-filter="class" style="display: flex; align-items: center; gap: 2px; padding: 4px 6px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 12px; font-size: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                            <span style="font-size: 8px;">🎓</span>
+                            <span>Class</span>
+                        </button>
+                        <button class="mobile-filter-btn" data-filter="degree" style="display: flex; align-items: center; gap: 2px; padding: 4px 6px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 12px; font-size: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                            <span style="font-size: 8px;">📚</span>
+                            <span>Degree</span>
+                        </button>
+                        <button class="mobile-filter-btn" data-filter="industry" style="display: flex; align-items: center; gap: 2px; padding: 4px 6px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 12px; font-size: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                            <span style="font-size: 8px;">🏭</span>
+                            <span>Industry</span>
+                        </button>
+                        <button class="mobile-filter-btn" data-filter="company" style="display: flex; align-items: center; gap: 2px; padding: 4px 6px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 12px; font-size: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                            <span style="font-size: 8px;">🏢</span>
+                            <span>Company</span>
+                        </button>
+                        <button class="mobile-clear-btn" style="display: flex; align-items: center; gap: 2px; padding: 4px 6px; background: rgba(0,194,168,0.3); border: 1px solid rgba(0,194,168,0.5); color: white; border-radius: 12px; font-size: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                            <span style="font-size: 8px;">🔄</span>
+                            <span>All</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- MINI DESKTOP CONTENT - vertical layout with horizontal chosen card at top -->
+                <div class="mobile-network-content" style="display: flex; flex-direction: column; height: calc(90vh - 100px); max-height: calc(90vh - 100px); border-radius: 0 0 8px 8px; padding: 0.75rem; overflow: hidden; box-sizing: border-box;">
+                    
+                    <!-- MOBILE HORIZONTAL CHOSEN COMPANY CARD - spans full width, shorter height -->
+                    <div class="mobile-network-chosen-card" style="width: 100%; background: white; border-radius: 8px; padding: 0.75rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 0.75rem;">
+                        <div class="mobile-profile-section" style="display: flex; align-items: center; gap: 0.75rem;">
+                            <!-- Company logo on the left -->
+                            <div class="mobile-profile-photo" style="width: 50px; height: 50px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 2px solid #F39C12; overflow: hidden; flex-shrink: 0;">
+                                ${companyLogo && companyLogo !== '🏢' ? `<img src="${companyLogo}" style="width: 100%; height: 100%; object-fit: cover;">` : '🏢'}
+                            </div>
+                            
+                            <!-- Company name and info in center -->
+                            <div class="mobile-profile-info" style="flex: 1; min-width: 0;">
+                                <h3 style="margin: 0 0 0.25rem 0; color: #1B365D; font-size: 0.8rem; font-weight: 600; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${companyName}</h3>
+                                <p style="margin: 0 0 0.25rem 0; color: #666; font-size: 0.65rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${industry}</p>
+                                <p style="margin: 0; color: #999; font-size: 0.6rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${alumniCount} Alumni</p>
+                            </div>
+                            
+                            <!-- Compact details on the right -->
+                            <div class="mobile-details-section" style="display: flex; flex-direction: column; gap: 0.125rem; font-size: 0.5rem; text-align: right; flex-shrink: 0;">
+                                <div style="color: #666;">🏭 ${industry}</div>
+                                <div style="color: #666;">👥 ${alumniCount} people</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- CONNECTION CARDS SECTION - below the chosen card -->
+                    <div class="mobile-network-connections" style="flex: 1; background: linear-gradient(135deg, rgba(11,107,255,0.02) 0%, rgba(0,194,168,0.02) 100%); border-radius: 8px; padding: 0.5rem; display: flex; flex-direction: column;">
+                        <div class="mobile-connected-alumni-cards" id="mobileConnectedAlumniCards" style="display: flex; flex-wrap: wrap; gap: 0.25rem; overflow-y: scroll; -webkit-overflow-scrolling: touch; height: 400px; max-height: 400px; padding-bottom: 30px;">
+                            <!-- Connected alumni cards will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            modalBody.appendChild(miniNetworkModal);
+            
+            // Trigger modal entrance animation
+            setTimeout(() => {
+                miniNetworkModal.style.opacity = '1';
+                miniNetworkModal.style.transform = 'scale(1) translateY(0)';
+            }, 50);
+            
+            // Populate with company alumni cards
+            setTimeout(() => {
+                window.displayMobileCompanyNetworkCards([]);
+            }, 100);
+        }
+
         // Create MINIATURE DESKTOP VERSION - like opening on a vertical little laptop
         function addMobileSuggestionCards(modalBody) {
             // Check if we already added the mini desktop version
@@ -7620,19 +8012,17 @@
             const allAlumni = window.alumniApp.alumniData;
             if (!allAlumni || allAlumni.length === 0) return;
             
-            // Find current selected alumni or company from the modal
-            const currentAlumniName = modalBody.querySelector('.profile-info h3, .alumni-name, h2, h3')?.textContent?.trim();
-            const currentAlumni = currentAlumniName ? allAlumni.find(a => a.personal?.name === currentAlumniName) : allAlumni[0];
-            
             // Check if this is a company popup by looking for company-specific elements
-            const isCompanyPopup = modalBody.querySelector('.network-modal #selectedAlumniDetails .detail-item .icon')?.textContent?.includes('🏭') && 
-                                  modalBody.querySelector('.network-modal #selectedAlumniDetails .detail-item .icon')?.textContent?.includes('👥');
+            const isCompanyPopup = window.alumniApp?.currentCompanyAlumni !== undefined;
             
             if (isCompanyPopup) {
-                console.log('🏢 Company popup detected - using existing layout');
                 // For company popups, the layout is already correct, just return
                 return;
             }
+            
+            // Find current selected alumni from the modal
+            const currentAlumniName = modalBody.querySelector('.profile-info h3, .alumni-name, h2, h3')?.textContent?.trim();
+            const currentAlumni = currentAlumniName ? allAlumni.find(a => a.personal?.name === currentAlumniName) : allAlumni[0];
             
             // Create EXACT desktop structure but miniaturized
             const miniNetworkModal = document.createElement('div');
@@ -7852,8 +8242,15 @@
                 });
             }
             
+
             // Function to display filtered alumni cards with complex network logic
             function displayMobileNetworkCards(filters = []) {
+                // Check if this is a company popup - if so, don't create mobile cards
+                const isCompanyPopup = window.alumniApp?.currentCompanyAlumni !== undefined;
+                if (isCompanyPopup) {
+                    return; // Skip mobile cards for company popups
+                }
+                
                 const cardsContainer = document.getElementById('mobileConnectedAlumniCards');
                 if (!cardsContainer) return;
                 
