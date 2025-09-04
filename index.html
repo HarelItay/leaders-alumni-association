@@ -2946,6 +2946,7 @@
                             <button class="cluster-btn" data-cluster="class">📚 Group by Class</button>
                             <button class="cluster-btn" data-cluster="degree">🎓 Group by Degree</button>
                             <button class="cluster-btn" data-cluster="industry">🏢 Group by Industry</button>
+                            <button class="cluster-btn" data-cluster="company">🏢 Group by Company</button>
                             <button class="cluster-btn meet-random-alumni" id="meet-random-alumni">🎲 Meet Random Alumni</button>
                         </div>
                     </div>
@@ -3427,6 +3428,7 @@
                         professional: {
                             current_role: row.current_role || '',
                             company: row.company || '',
+                            company_logo_url: row['Company Logo URL'] || row.company_logo_url || row.companyLogoUrl || '',
                             industry: row.industry || row.Industry || '',
                             experience_level: this.inferExperienceLevel(row.graduation_year, row.current_role),
                             expertise_tags: this.generateExpertiseTags(row.degree, row.current_role)
@@ -3467,6 +3469,7 @@
                         professional: {
                             current_role: csvRow.position || csvRow.current_role || '', // Fixed: use 'position' field
                             company: csvRow.company || '', // Already correct
+                            company_logo_url: csvRow['Company Logo URL'] || csvRow.company_logo_url || csvRow.companyLogoUrl || '',
                             industry: csvRow.industry || '', // Already correct
                             experience_level: csvRow.experience_level || 'mid',
                             expertise_tags: csvRow.expertise_tags ? csvRow.expertise_tags.split(',').map(tag => tag.trim()) : []
@@ -5284,6 +5287,8 @@
                     this.showDegreeClusters();
                 } else if (clusterType === 'industry') {
                     this.showIndustryClusters();
+                } else if (clusterType === 'company') {
+                    this.showCompanyClusters();
                 }
             },
 
@@ -5580,6 +5585,316 @@
                     container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #e74c3c;">Error loading industry clusters</div>';
                 }
             },
+
+            showCompanyClusters() {
+                console.log('🏢 showCompanyClusters called!');
+                const container = this.elements.cardsContainer;
+                console.log('🏢 Container:', container);
+                if (!container) {
+                    console.error('🏢 No container found!');
+                    return;
+                }
+                
+                // Keep mobile-responsive viewport for clustering
+                this.setMobileResponsiveViewport();
+                
+                // Add clustering class
+                container.classList.add('clustering');
+                console.log('🏢 About to call groupAlumniByCompany...');
+                
+                try {
+                    const companies = this.groupAlumniByCompany();
+                    console.log('🏢 Companies:', companies);
+                    container.innerHTML = '';
+
+                    // Add header
+                    const header = document.createElement('div');
+                    header.className = 'cluster-header';
+                    header.style.cssText = 'text-align: center; padding: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px; margin-bottom: 2rem;';
+                    header.innerHTML = `
+                        <h2 style="margin: 0; font-size: 2rem; font-weight: 700;">🏢 Companies</h2>
+                        <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Click on a company to see alumni working there</p>
+                    `;
+                    container.appendChild(header);
+
+                    // Create company grid
+                    const grid = document.createElement('div');
+                    grid.className = 'company-grid';
+                    grid.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; padding: 1rem;';
+
+                    Object.entries(companies).forEach(([companyName, data]) => {
+                        const companyCard = this.createCompanyCard(companyName, data);
+                        grid.appendChild(companyCard);
+                    });
+
+                    container.appendChild(grid);
+                    console.log('✅ Company clusters rendered successfully');
+                } catch (error) {
+                    console.error('🏢 Error in showCompanyClusters:', error);
+                    container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #e74c3c;">Error loading company clusters</div>';
+                }
+            },
+
+            groupAlumniByCompany() {
+                const companies = {};
+                
+                console.log('🏢 Filtered data count:', this.filteredData.length);
+                
+                this.filteredData.forEach((alumni, index) => {
+                    const company = alumni.professional?.company || 'Unknown Company';
+                    const companyName = company.trim() || 'Unknown Company';
+                    
+                    if (!companies[companyName]) {
+                        companies[companyName] = {
+                            alumni: [],
+                            logo_url: alumni.professional?.company_logo_url || '',
+                            count: 0
+                        };
+                    }
+                    
+                    companies[companyName].alumni.push(alumni);
+                    companies[companyName].count++;
+                });
+                
+                console.log('🏢 Grouped companies:', Object.keys(companies));
+                return companies;
+            },
+
+            createCompanyCard(companyName, data) {
+                const card = document.createElement('div');
+                card.className = 'company-card';
+                card.style.cssText = `
+                    background: white;
+                    border-radius: 12px;
+                    padding: 1.5rem;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    text-align: center;
+                    border: 2px solid transparent;
+                `;
+                
+                // Logo container
+                const logoContainer = document.createElement('div');
+                logoContainer.style.cssText = 'width: 80px; height: 80px; margin: 0 auto 1rem auto; border-radius: 50%; overflow: hidden; background: #f8f9fa; display: flex; align-items: center; justify-content: center;';
+                
+                if (data.logo_url && data.logo_url.trim()) {
+                    const logo = document.createElement('img');
+                    logo.src = data.logo_url;
+                    logo.alt = `${companyName} logo`;
+                    logo.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
+                    logo.onerror = () => {
+                        logoContainer.innerHTML = '<div style="font-size: 2rem;">🏢</div>';
+                    };
+                    logoContainer.appendChild(logo);
+                } else {
+                    logoContainer.innerHTML = '<div style="font-size: 2rem;">🏢</div>';
+                }
+                
+                // Company info
+                const info = document.createElement('div');
+                info.innerHTML = `
+                    <h3 style="margin: 0 0 0.5rem 0; font-size: 1.25rem; color: #2c3e50;">${companyName}</h3>
+                    <p style="margin: 0; color: #7f8c8d; font-size: 0.9rem;">${data.count} alumni</p>
+                `;
+                
+                card.appendChild(logoContainer);
+                card.appendChild(info);
+                
+                // Click handler to show alumni popup
+                card.addEventListener('click', () => {
+                    this.showCompanyAlumniPopup(companyName, data.alumni);
+                });
+                
+                // Hover effects
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-5px)';
+                    card.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)';
+                    card.style.borderColor = '#667eea';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0)';
+                    card.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                    card.style.borderColor = 'transparent';
+                });
+                
+                return card;
+            },
+
+            showCompanyAlumniPopup(companyName, alumni) {
+                console.log(`🏢 Showing alumni for company: ${companyName}`);
+                
+                // Create a company object to pass to the network modal
+                const companyData = {
+                    personal: {
+                        name: companyName,
+                        photo: '🏢'
+                    },
+                    professional: {
+                        company: companyName,
+                        company_logo_url: alumni[0]?.professional?.company_logo_url || '',
+                        current_role: `${alumni.length} Alumni`,
+                        industry: alumni[0]?.professional?.industry || 'Not specified'
+                    }
+                };
+                
+                const content = this.generateCompanyNetworkModalContent(companyData, alumni);
+                this.showNetworkModal('Company Network', content, companyData, false);
+                
+                // Initialize company alumni visualization
+                setTimeout(() => {
+                    this.initializeCompanyAlumniVisualization(companyData, alumni);
+                }, 100);
+            },
+
+            generateCompanyNetworkModalContent(companyData, alumni) {
+                const companyName = companyData.personal?.name || 'Unknown Company';
+                const logoUrl = companyData.professional?.company_logo_url || '';
+                const alumniCount = alumni.length;
+                
+                return `
+                    <div class="network-modal">
+                        <div class="network-header">
+                            <h2>${companyName}</h2>
+                            <p>Professional Network Connections</p>
+                            <div class="network-filters">
+                                <button class="filter-btn" data-filter="class" id="filterClass">
+                                    <span class="filter-icon">🎓</span>
+                                    <span class="filter-label">Same Class</span>
+                                </button>
+                                <button class="filter-btn" data-filter="degree" id="filterDegree">
+                                    <span class="filter-icon">📚</span>
+                                    <span class="filter-label">Same Degree</span>
+                                </button>
+                                <button class="filter-btn" data-filter="industry" id="filterIndustry">
+                                    <span class="filter-icon">🏭</span>
+                                    <span class="filter-label">Same Industry</span>
+                                </button>
+                                <button class="filter-btn" data-filter="company" id="filterCompany">
+                                    <span class="filter-icon">🏢</span>
+                                    <span class="filter-label">Same Company</span>
+                                </button>
+                                <button class="filter-btn clear-filters" id="clearFilters">
+                                    <span class="filter-icon">🔄</span>
+                                    <span class="filter-label">Show All</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="network-content">
+                            <div class="network-left-panel">
+                                <div class="network-alumni-card" id="selectedAlumniCard">
+                                    <div class="profile-section">
+                                        <div class="profile-photo" id="selectedAlumniPhoto">
+                                            ${logoUrl ? `<img src="${logoUrl}" alt="${companyName} logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" onerror="this.parentElement.innerHTML='🏢'">` : '🏢'}
+                                        </div>
+                                        <div class="profile-info">
+                                            <h3 id="selectedAlumniName">${companyName}</h3>
+                                            <p id="selectedAlumniRole">${alumniCount} Alumni</p>
+                                        </div>
+                                    </div>
+                                    <div class="details-section" id="selectedAlumniDetails">
+                                        <div class="detail-item">
+                                            <span class="icon">🏭</span>
+                                            <span class="label">Industry:</span>
+                                            <span class="value">${companyData.professional?.industry || 'Not specified'}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="icon">👥</span>
+                                            <span class="label">Alumni:</span>
+                                            <span class="value">${alumniCount} people</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="network-right-panel">
+                                <div class="connected-alumni-cards" id="connectedAlumniCards">
+                                    <!-- Connected alumni cards will be displayed here -->
+                                </div>
+                                
+
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+
+            initializeCompanyAlumniVisualization(companyData, alumni) {
+                const container = document.getElementById('connectedAlumniCards');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                // Create alumni cards using the existing network card style
+                alumni.forEach(alumniData => {
+                    const card = this.createNetworkAlumniCard(alumniData);
+                    container.appendChild(card);
+                });
+            },
+
+            createNetworkAlumniCard(alumni) {
+                const personal = alumni.personal || {};
+                const professional = alumni.professional || {};
+                
+                const card = document.createElement('div');
+                card.className = 'connected-alumni-card general-connection';
+                
+                card.innerHTML = `
+                    <div class="card-photo">
+                        ${this.renderPhoto(personal.photo, personal.name) || '👤'}
+                    </div>
+                    <div class="card-name">${personal.name || 'Anonymous'}</div>
+                    <div class="card-role">${professional.current_role || 'Professional'}</div>
+                    <div class="card-details">
+                        ${professional.company ? `
+                            <div class="card-detail-item">
+                                <span class="card-detail-icon">🏢</span>
+                                <span>${professional.company}</span>
+                            </div>
+                        ` : ''}
+                        ${personal.graduation_year ? `
+                            <div class="card-detail-item">
+                                <span class="card-detail-icon">🎓</span>
+                                <span>Class ${personal.graduation_year}</span>
+                            </div>
+                        ` : ''}
+                        ${personal.degree ? `
+                            <div class="card-detail-item">
+                                <span class="card-detail-icon">📜</span>
+                                <span>${personal.degree}</span>
+                            </div>
+                        ` : ''}
+                        ${professional.industry ? `
+                            <div class="card-detail-item">
+                                <span class="card-detail-icon">🏭</span>
+                                <span>${professional.industry}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                // Add click handler to show full alumni profile
+                card.addEventListener('click', () => {
+                    this.showDetailModal(alumni);
+                });
+                
+                return card;
+            },
+
+            getUniqueValues(alumni, path) {
+                const values = alumni.map(alumni => {
+                    const pathParts = path.split('.');
+                    let value = alumni;
+                    for (const part of pathParts) {
+                        value = value?.[part];
+                    }
+                    return value;
+                }).filter(Boolean);
+                
+                return [...new Set(values)].sort();
+            },
+
 
             groupAlumniByDegreeCategories() {
                 const categories = {
