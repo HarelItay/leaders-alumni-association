@@ -4812,40 +4812,45 @@
                                         </div>
                                         <div class="profile-info">
                                             <h3 id="selectedAlumniName">${personal.name}</h3>
-                                            <p id="selectedAlumniRole">${professional.current_role || 'Role not specified'}</p>
+                                            ${professional.current_role ? `<p id="selectedAlumniRole">${professional.current_role}</p>` : ''}
                                         </div>
                                     </div>
                                     <div class="details-section" id="selectedAlumniDetails">
-                                        <div class="detail-item">
-                                            <span class="icon">🏢</span>
-                                            <span class="label">Company:</span>
-                                            <span class="value">${professional.company || 'Not specified'}</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="icon">🎓</span>
-                                            <span class="label">Degree:</span>
-                                            <span class="value">${personal.degree || 'Not specified'}</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="icon">📅</span>
-                                            <span class="label">Class:</span>
-                                            <span class="value">${personal.graduation_year ? `Class of ${personal.graduation_year}` : 'Not specified'}</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="icon">🏭</span>
-                                            <span class="label">Industry:</span>
-                                            <span class="value">${professional.industry || 'Not specified'}</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="icon">📍</span>
-                                            <span class="label">Location:</span>
-                                            <span class="value">${personal.location?.city ? `${personal.location.city}, ${personal.location.country || ''}` : 'Not specified'}</span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="icon">🎪</span>
-                                            <span class="label">Summit 2025:</span>
-                                            <span class="value">${summit.attending ? 'Attending' : 'Not attending'}</span>
-                                        </div>
+                                        ${alumni.id && alumni.id.startsWith('company_') ? `
+                                            <!-- Company-specific details: only industry and alumni count -->
+                                            <div class="detail-item">
+                                                <span class="icon">🏭</span>
+                                                <span class="label">Industry:</span>
+                                                <span class="value">${professional.industry || 'Not specified'}</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="icon">👥</span>
+                                                <span class="label">Alumni:</span>
+                                                <span class="value">${professional.alumni_count || 0} people</span>
+                                            </div>
+                                        ` : `
+                                            <!-- Normal alumni details -->
+                                            <div class="detail-item">
+                                                <span class="icon">🏢</span>
+                                                <span class="label">Company:</span>
+                                                <span class="value">${professional.company || 'Not specified'}</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="icon">🎓</span>
+                                                <span class="label">Degree:</span>
+                                                <span class="value">${personal.degree || 'Not specified'}</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="icon">📅</span>
+                                                <span class="label">Class:</span>
+                                                <span class="value">${personal.graduation_year ? `Class of ${personal.graduation_year}` : 'Not specified'}</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="icon">🏭</span>
+                                                <span class="label">Industry:</span>
+                                                <span class="value">${professional.industry || 'Not specified'}</span>
+                                            </div>
+                                        `}
                                     </div>
                                 </div>
                             </div>
@@ -5735,40 +5740,44 @@
                 const companyAlumni = {
                     id: `company_${companyName}`,
                     personal: {
-                        name: companyName,
-                        photo: alumni[0]?.professional?.company_logo_url || '🏢',
-                        graduation_year: '', // Leave empty for company
-                        degree: '', // Leave empty for company  
-                        location: { city: '', country: '' }
+                        name: companyName, // Company name
+                        photo: alumni[0]?.professional?.company_logo_url || '🏢', // Company logo
+                        graduation_year: '', // Empty - don't show
+                        degree: '', // Empty - don't show
+                        location: { city: '', country: '' } // Empty - don't show
                     },
                     professional: {
-                        current_role: alumni[0]?.professional?.industry || 'Technology', // Show industry as role
-                        company: `${alumni.length} Alumni`, // Show alumni count as company
+                        current_role: '', // Empty - don't show role line
+                        company: '', // Empty - don't show company line (we'll show industry and alumni count instead)
                         company_logo_url: alumni[0]?.professional?.company_logo_url || '',
-                        industry: alumni[0]?.professional?.industry || 'Not specified',
-                        experience_level: '',
-                        expertise_tags: []
+                        industry: alumni[0]?.professional?.industry || 'Not specified', // Show industry
+                        experience_level: '', // Empty - don't show
+                        expertise_tags: [], // Empty - don't show
+                        // Add custom field for alumni count
+                        alumni_count: alumni.length
                     },
                     networking: {
-                        goals: [`Connect with ${alumni.length} alumni from ${companyName}`],
-                        offering: ['Industry expertise', 'Professional networking'],
-                        availability: 'available'
+                        goals: [], // Empty - don't show
+                        offering: [], // Empty - don't show  
+                        availability: '' // Empty - don't show
                     },
                     summit_2025: {
-                        attending: false,
+                        attending: false, // Don't show summit info
                         arrival_date: ''
                     },
                     social: {
-                        linkedin: ''
+                        linkedin: '' // Empty - don't show
                     }
                 };
                 
                 // Use the EXACT same system as normal alumni popup
                 const content = this.generateNetworkModalContent(companyAlumni);
-                this.showNetworkModal('Company Network', content, companyAlumni, false); // Set showConnections to FALSE for company popups
+                this.showNetworkModal('Company Network', content, companyAlumni, true);
                 
-                // Skip desktop network initialization completely for company popups - mobile handles it
-                console.log('🏢 Skipping desktop network initialization for company popup');
+                // Initialize company network visualization for desktop
+                setTimeout(() => {
+                    this.initializeCompanyNetworkVisualization(companyAlumni, alumni);
+                }, 100);
             },
 
             initializeCompanyNetworkVisualization(companyAlumni, alumni) {
@@ -5794,72 +5803,26 @@
                 // Clear any existing content
                 container.innerHTML = '';
                 
-                // Create alumni cards exactly like in normal networking popup
+                // Create alumni cards using the EXACT same method as normal networking popup
                 alumni.forEach((alumniData, index) => {
-                    const personal = alumniData.personal || {};
-                    const professional = alumniData.professional || {};
+                    console.log(`🏢 Creating desktop card ${index + 1}/${alumni.length} for:`, alumniData.personal?.name);
                     
-                    console.log(`🏢 Creating card ${index + 1}/${alumni.length} for:`, personal.name);
+                    // Use the EXACT same createNetworkAlumniCard method as normal networking popup
+                    const card = this.createNetworkAlumniCard(alumniData);
                     
-                    const card = document.createElement('div');
-                    card.className = 'connected-alumni-card mobile-mini-card';
-                    
-                    // Use the EXACT mobile card styling from other clusters
-                    const cardStyle = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'; // Default purple gradient
-                    
-                    card.style.cssText = `
-                        width: calc(50% - 0.125rem);
-                        height: 220px;
-                        background: ${cardStyle};
-                        border-radius: 10px;
-                        padding: 12px;
-                        color: white;
-                        position: relative;
-                        cursor: pointer;
-                        transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-                        box-shadow: 0 3px 12px rgba(0,0,0,0.15);
-                        border: 1px solid transparent;
-                        margin: 0;
-                        font-size: 0.75rem;
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: space-between;
-                    `;
-                    
-                    card.innerHTML = `
-                        <!-- Photo at top -->
-                        <div style="display: flex; align-items: center; justify-content: center; margin-bottom: auto;">
-                            <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 1rem; overflow: hidden;">
-                                ${this.renderPhoto(personal.photo, personal.name) || '👤'}
-                            </div>
-                        </div>
+                    // Override the click handler to properly handle company -> alumni transition
+                    const originalClickHandler = card.onclick;
+                    card.onclick = () => {
+                        console.log(`🔥 DESKTOP: Clicked on ${alumniData.personal?.name}`);
                         
-                        <!-- Complete alumni info with optimal spacing -->
-                        <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; min-height: 0;">
-                            <!-- Name -->
-                            <div class="card-name" style="font-size: 11px; font-weight: 700; line-height: 1.2; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">${personal.name || 'Anonymous'}</div>
-                            
-                            <!-- Current Role -->
-                            <div class="card-role" style="font-size: 9px; font-weight: 600; opacity: 0.95; line-height: 1.2; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${professional.current_role || 'Professional'}</div>
-                            
-                            <!-- Company (if different from current company) -->
-                            ${professional.company ? `<div style="font-size: 8px; font-weight: 500; opacity: 0.9; line-height: 1.2; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🏢 ${professional.company}</div>` : ''}
-                            
-                            <!-- Class Year -->
-                            ${personal.graduation_year ? `<div style="font-size: 8px; font-weight: 500; opacity: 0.9; line-height: 1.2; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🎓 Class ${personal.graduation_year}</div>` : ''}
-                            
-                            <!-- Degree -->
-                            ${personal.degree ? `<div style="font-size: 8px; font-weight: 500; opacity: 0.9; line-height: 1.2; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">📜 ${personal.degree}</div>` : ''}
-                            
-                            <!-- Industry -->
-                            ${professional.industry ? `<div style="font-size: 8px; font-weight: 500; opacity: 0.9; line-height: 1.2; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🏭 ${professional.industry}</div>` : ''}
-                        </div>
-                    `;
-                    
-                    // Add click handler to show full alumni profile
-                    card.addEventListener('click', () => {
-                        this.showDetailModal(alumniData);
-                    });
+                        // Clear company context and show alumni connections
+                        this.currentCompanyAlumni = undefined;
+                        this.closeModal();
+                        
+                        setTimeout(() => {
+                            this.showDetailModal(alumniData, true);
+                        }, 100);
+                    };
                     
                     container.appendChild(card);
                 });
@@ -7733,28 +7696,16 @@
                 
                 // Add click handler (EXACT COPY from working desktop mini cards line 7282)
                 card.addEventListener('click', () => {
-                    console.log(`🔥 ALUMNI CLICK: ${personal.name}`);
-                    console.log(`🔥 BEFORE: currentCompanyAlumni =`, window.alumniApp?.currentCompanyAlumni?.length);
+                    console.log(`🏢 Company popup: Clicking alumni ${personal.name} - CLEARING COMPANY CONTEXT`);
                     
-                    // AGGRESSIVELY CLEAR ALL COMPANY CONTEXT
+                    // CLEAR the company context so we show alumni connections, not company
                     if (window.alumniApp) {
                         window.alumniApp.currentCompanyAlumni = undefined;
-                        delete window.alumniApp.currentCompanyAlumni;
-                        console.log(`🔥 AFTER: currentCompanyAlumni =`, window.alumniApp?.currentCompanyAlumni);
+                        console.log(`🏢 Cleared company context - now showing ${personal.name}'s connections`);
                         
-                        // Close current modal first
-                        if (window.alumniApp.closeModal) {
-                            window.alumniApp.closeModal();
-                            console.log(`🔥 CLOSED COMPANY MODAL`);
+                        if (window.alumniApp.handleNetworkNodeClick) {
+                            window.alumniApp.handleNetworkNodeClick(null, alumniData);
                         }
-                        
-                        // Wait a bit then show alumni connections
-                        setTimeout(() => {
-                            console.log(`🔥 SHOWING ${personal.name}'S CONNECTIONS`);
-                            if (window.alumniApp.showDetailModal) {
-                                window.alumniApp.showDetailModal(alumniData, true);
-                            }
-                        }, 100);
                     }
                 });
                 
