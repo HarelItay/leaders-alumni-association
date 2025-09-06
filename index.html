@@ -3339,6 +3339,12 @@
                 const alumni = [];
                 
                 console.log('📋 Headers found:', headers);
+                console.log('🔍 Looking for photo-related headers:');
+                headers.forEach((header, index) => {
+                    if (header.toLowerCase().includes('photo') || header.toLowerCase().includes('image') || header.toLowerCase().includes('pic')) {
+                        console.log(`  Column ${index}: "${header}"`);
+                    }
+                });
 
                 for (let i = 1; i < lines.length; i++) {
                     const values = this.parseCSVLine(lines[i]);
@@ -3349,9 +3355,49 @@
                         alumniData[header] = values[index] ? values[index].trim() : '';
                     });
 
+                    // Special debugging for people with missing images
+                    if (alumniData.Name && (alumniData.Name.toLowerCase().includes('adi nechemia') || 
+                                           alumniData.Name.toLowerCase().includes('adi ben nun') ||
+                                           alumniData.Name.toLowerCase().includes('missing') ||
+                                           !alumniData.Photo && !alumniData.photo && !alumniData.PHOTO)) {
+                        console.log(`🔍 DEBUGGING MISSING IMAGE FOR: ${alumniData.Name}`);
+                        console.log('📄 Raw line:', lines[i]);
+                        console.log('📋 Parsed row object:', alumniData);
+                        console.log('📸 Photo field value:', alumniData.Photo || alumniData.photo || alumniData.PHOTO || 'NOT FOUND');
+                        console.log('🏢 Company Logo URL field:', alumniData['Company Logo URL'] || alumniData.company_logo_url || 'NOT FOUND');
+                        
+                        // Check all possible photo field variations
+                        Object.keys(alumniData).forEach(key => {
+                            if (key.toLowerCase().includes('photo') || key.toLowerCase().includes('image') || key.toLowerCase().includes('pic')) {
+                                console.log(`📸 Photo-related field "${key}":`, alumniData[key]);
+                            }
+                        });
+                        
+                        // Show ALL fields to see what we have
+                        console.log('📋 ALL FIELDS for', alumniData.Name + ':');
+                        Object.keys(alumniData).forEach(key => {
+                            console.log(`  "${key}": "${alumniData[key]}"`);
+                        });
+                    }
+
                     // Convert Google Sheets row to our JSON structure
                     const convertedAlumni = this.convertGoogleSheetsToAlumniFormat(alumniData);
                     if (convertedAlumni && convertedAlumni.personal.name) {
+                        // Additional debugging for people with missing images after conversion
+                        const name = convertedAlumni.personal.name.toLowerCase();
+                        const hasImage = convertedAlumni.personal.photo && 
+                                        convertedAlumni.personal.photo !== '👤' && 
+                                        convertedAlumni.personal.photo !== '📷' &&
+                                        !convertedAlumni.personal.photo.includes('emoji');
+                        
+                        if (name.includes('adi nechemia') || name.includes('adi ben nun') || !hasImage) {
+                            console.log(`🔍 AFTER CONVERSION - ${convertedAlumni.personal.name}:`);
+                            console.log('👤 Name:', convertedAlumni.personal.name);
+                            console.log('📸 Photo:', convertedAlumni.personal.photo);
+                            console.log('📸 Has valid image:', hasImage);
+                            console.log('🏢 Company:', convertedAlumni.professional.company);
+                            console.log('🔗 Company Logo URL:', convertedAlumni.professional.company_logo_url);
+                        }
                         alumni.push(convertedAlumni);
                     }
                 }
@@ -3417,7 +3463,7 @@
                         id: row.id || `alumni_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
                         personal: {
                             name: fullName || 'Anonymous',
-                            photo: row.photo || this.getRandomEmoji(),
+                            photo: row.photo || row.Photo || row.PHOTO || row['Photo URL'] || row['photo_url'] || row.image || row.Image || this.getRandomEmoji(),
                             graduation_year: parseInt(row.graduation_year) || new Date().getFullYear(),
                             degree: row.degree || row.Degree || '',
                             location: {
@@ -3577,7 +3623,8 @@
                 if (processedPhoto.startsWith('http://') || processedPhoto.startsWith('https://')) {
                     // Add cache busting properly (& if URL already has params, ? if not)
                     const separator = processedPhoto.includes('?') ? '&' : '?';
-                    return `<img src="${processedPhoto}${separator}cb=${Date.now()}" alt="Profile Photo" onload="this.style.opacity=1" onerror="this.outerHTML='<div class=\\'photo-placeholder\\'>📷</div>'" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; opacity: 0; transition: opacity 0.3s ease;">`;
+                    console.log(`🖼️ Loading image URL for "${alumniName}": ${processedPhoto}`);
+                    return `<img src="${processedPhoto}${separator}cb=${Date.now()}" alt="Profile Photo" onload="console.log('✅ Image loaded for ${alumniName}:', this.src); this.style.opacity=1" onerror="console.log('❌ Image failed for ${alumniName}:', this.src); this.outerHTML='<div class=\\'photo-placeholder\\' title=\\'Image failed to load\\'>📷</div>'" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; opacity: 0; transition: opacity 0.3s ease;">`;
                 }
                 
                 // Check if it's a data URL (base64 image)
@@ -3589,7 +3636,8 @@
                 if (processedPhoto.includes('://') || processedPhoto.includes('www.') || processedPhoto.includes('.com') || processedPhoto.includes('.jpg') || processedPhoto.includes('.png')) {
                     // Add cache busting properly (& if URL already has params, ? if not)
                     const separator = processedPhoto.includes('?') ? '&' : '?';
-                    return `<img src="${processedPhoto}${separator}cb=${Date.now()}" alt="Profile Photo" onload="this.style.opacity=1" onerror="this.outerHTML='<div class=\\'photo-placeholder\\'>📷</div>'" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; opacity: 0; transition: opacity 0.3s ease;">`;
+                    console.log(`🖼️ Loading pattern-matched image URL for "${alumniName}": ${processedPhoto}`);
+                    return `<img src="${processedPhoto}${separator}cb=${Date.now()}" alt="Profile Photo" onload="console.log('✅ Pattern-matched image loaded for ${alumniName}:', this.src); this.style.opacity=1" onerror="console.log('❌ Pattern-matched image failed for ${alumniName}:', this.src); this.outerHTML='<div class=\\'photo-placeholder\\' title=\\'Image failed to load\\'>📷</div>'" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; opacity: 0; transition: opacity 0.3s ease;">`;
                 }
                 
                 // Default placeholder for anything else - but try local image first
@@ -4614,7 +4662,6 @@
                             
                             <div class="card-footer">
                                 ${this.renderLinkedInButton(social.linkedin)}
-                                ${this.renderAttendingStatus(summit.attending)}
                             </div>
                         </div>
                     </div>
@@ -4750,15 +4797,6 @@
                                     </ul>
                                 </div>
 
-                                ${summit.attending ? `
-                                <div class="detail-section">
-                                    <h4>Summit 2025 Participation</h4>
-                                    <ul>
-                                        <li><strong>Attending:</strong> Yes</li>
-                                        <li><strong>Arrival Date:</strong> ${summit.arrival_date || 'TBD'}</li>
-                                    </ul>
-                                </div>
-                                ` : ''}
                             </div>
                         </div>
                         <div class="detail-actions">
@@ -6687,12 +6725,6 @@
                                 <span>${personal.location.city}</span>
                             </div>
                         ` : ''}
-                        ${summit.attending ? `
-                            <div class="card-detail-item">
-                                <span class="card-detail-icon">🎪</span>
-                                <span>Summit 2025</span>
-                            </div>
-                        ` : ''}
                     </div>
                     <div class="connection-badges">
                         ${this.generateConnectionBadges(multipleConnections)}
@@ -7440,11 +7472,6 @@
                             <span class="icon">📍</span>
                             <span class="label">Location:</span>
                             <span class="value">${personal.location?.city ? `${personal.location.city}, ${personal.location.country || ''}` : 'Not specified'}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="icon">🎪</span>
-                            <span class="label">Summit 2025:</span>
-                            <span class="value">${summit.attending ? 'Attending' : 'Not attending'}</span>
                         </div>
                     `;
                 }
