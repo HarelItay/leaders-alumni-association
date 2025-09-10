@@ -1,16 +1,15 @@
-name,class,degree,industry,attending,company,position,location,Company Logo URL
-John Smith,2020,Computer Science,Technology,Yes,TechCorp,Senior Developer,San Francisco,https://logo.clearbit.com/techcorp.com
-Jane Doe,2019,Business Administration,Finance,No,FinanceInc,Analyst,New York,https://logo.clearbit.com/financeinc.com
-Bob Johnson,2021,Engineering,Manufacturing,Yes,ManufacturingCo,Engineer,Chicago,https://logo.clearbit.com/manufacturingco.com
-Alice Brown,2018,Marketing,Media,Yes,MediaGroup,Marketing Manager,Los Angeles,https://logo.clearbit.com/mediagroup.com
-Charlie Wilson,2020,Psychology,Healthcare,No,HealthSystem,Therapist,Boston,https://logo.clearbit.com/healthsystem.com
-Sarah Chen,2020,Computer Science,Technology,Yes,TechStart,Product Manager,Seattle,https://logo.clearbit.com/techstart.com
-Michael Rodriguez,2019,Business Administration,Finance,Yes,BankCorp,Investment Banker,Miami,https://logo.clearbit.com/bankcorp.com
-Emily Davis,2021,Engineering,Technology,Yes,TechSolutions,Software Engineer,Austin,https://logo.clearbit.com/techsolutions.com
-David Park,2018,Marketing,Media,No,CreativeAgency,Creative Director,Portland,https://logo.clearbit.com/creativeagency.com
-Lisa Wang,2020,Psychology,Healthcare,Yes,MedCenter,Clinical Psychologist,Denver,https://logo.clearbit.com/medcenter.com
-James Wilson,2019,Computer Science,Technology,Yes,TechCorp,Full Stack Developer,San Francisco,https://logo.clearbit.com/techcorp.com
-Maria Garcia,2020,Business Administration,Finance,Yes,FinanceInc,Senior Analyst,New York,https://logo.clearbit.com/financeinc.com
-Robert Kim,2021,Engineering,Technology,Yes,TechStart,Backend Engineer,Seattle,https://logo.clearbit.com/techstart.com
-Jennifer Lee,2018,Marketing,Technology,No,TechCorp,Marketing Director,San Francisco,https://logo.clearbit.com/techcorp.com
-
+name,class,degree,industry,attending,company,position,location,Company Logo URL,LinkedIn Open Roles
+John Smith,2020,Computer Science,Technology,Yes,TechCorp,Senior Developer,San Francisco,https://logo.clearbit.com/techcorp.com,https://www.linkedin.com/jobs/search/?keywords=TechCorp
+Jane Doe,2019,Business Administration,Finance,No,FinanceInc,Analyst,New York,https://logo.clearbit.com/financeinc.com,https://www.linkedin.com/jobs/search/?keywords=FinanceInc
+Bob Johnson,2021,Engineering,Manufacturing,Yes,ManufacturingCo,Engineer,Chicago,https://logo.clearbit.com/manufacturingco.com,https://www.linkedin.com/jobs/search/?keywords=ManufacturingCo
+Alice Brown,2018,Marketing,Media,Yes,MediaGroup,Marketing Manager,Los Angeles,https://logo.clearbit.com/mediagroup.com,https://www.linkedin.com/jobs/search/?keywords=MediaGroup
+Charlie Wilson,2020,Psychology,Healthcare,No,HealthSystem,Therapist,Boston,https://logo.clearbit.com/healthsystem.com,
+Sarah Chen,2020,Computer Science,Technology,Yes,TechStart,Product Manager,Seattle,https://logo.clearbit.com/techstart.com,https://www.linkedin.com/jobs/search/?keywords=TechStart
+Michael Rodriguez,2019,Business Administration,Finance,Yes,BankCorp,Investment Banker,Miami,https://logo.clearbit.com/bankcorp.com,https://www.linkedin.com/jobs/search/?keywords=BankCorp
+Emily Davis,2021,Engineering,Technology,Yes,TechSolutions,Software Engineer,Austin,https://logo.clearbit.com/techsolutions.com,https://www.linkedin.com/jobs/search/?keywords=TechSolutions
+David Park,2018,Marketing,Media,No,CreativeAgency,Creative Director,Portland,https://logo.clearbit.com/creativeagency.com,
+Lisa Wang,2020,Psychology,Healthcare,Yes,MedCenter,Clinical Psychologist,Denver,https://logo.clearbit.com/medcenter.com,
+James Wilson,2019,Computer Science,Technology,Yes,TechCorp,Full Stack Developer,San Francisco,https://logo.clearbit.com/techcorp.com,https://www.linkedin.com/jobs/search/?keywords=TechCorp
+Maria Garcia,2020,Business Administration,Finance,Yes,FinanceInc,Senior Analyst,New York,https://logo.clearbit.com/financeinc.com,https://www.linkedin.com/jobs/search/?keywords=FinanceInc
+Robert Kim,2021,Engineering,Technology,Yes,TechStart,Backend Engineer,Seattle,https://logo.clearbit.com/techstart.com,https://www.linkedin.com/jobs/search/?keywords=TechStart
+Jennifer Lee,2018,Marketing,Technology,No,TechCorp,Marketing Director,San Francisco,https://logo.clearbit.com/techcorp.com,https://www.linkedin.com/jobs/search/?keywords=TechCorp
