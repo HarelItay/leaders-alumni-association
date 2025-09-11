@@ -3834,15 +3834,12 @@
                     
                     try {
                         // Try to load the image to see if it exists
-                        const response = await fetch(imagePath, { method: 'HEAD' });
-                        if (response.ok) {
-                            
+                        const response = await fetch(imagePath, { method: 'HEAD' }).catch(() => ({ ok: false }));
+                        if (response && response.ok) {
                             return imagePath;
-                        } else {
-                            
                         }
                     } catch (error) {
-                        
+                        // Silently handle errors
                     }
                 }
                 
@@ -8250,7 +8247,7 @@
                 card.innerHTML = `
                     <!-- Photo at top -->
                     <div style="display: flex; align-items: center; justify-content: center; margin-bottom: auto;">
-                        <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 1rem; overflow: hidden;">
+                        <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 1rem; overflow: hidden;">
                             ${window.alumniApp.renderPhoto(personal.photo, personal.name) || '👤'}
                         </div>
                     </div>
@@ -8494,7 +8491,7 @@
                     <div class="mobile-network-chosen-card" style="width: 100%; background: white; border-radius: 8px; padding: 0.75rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 0.75rem;">
                         <div class="mobile-profile-section" style="display: flex; align-items: center; gap: 0.75rem;">
                             <!-- Company logo on the left -->
-                            <div class="mobile-profile-photo" style="width: 50px; height: 50px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 2px solid #F39C12; overflow: hidden; flex-shrink: 0;">
+                            <div class="mobile-profile-photo" style="width: 60px; height: 60px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 2px solid #F39C12; overflow: hidden; flex-shrink: 0;">
                                 ${companyLogo && companyLogo !== '🏢' ? `<img src="${companyLogo}" style="width: 100%; height: 100%; object-fit: cover;">` : '🏢'}
                             </div>
                             
@@ -8632,7 +8629,7 @@
                     <div class="mobile-network-chosen-card" style="width: 100%; background: white; border-radius: 8px; padding: 0.75rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 0.75rem;">
                         <div class="mobile-profile-section" style="display: flex; align-items: center; gap: 0.75rem;">
                             <!-- Profile photo on the left -->
-                            <div class="mobile-profile-photo" style="width: 50px; height: 50px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 2px solid #F39C12; overflow: hidden; flex-shrink: 0;">
+                            <div class="mobile-profile-photo" style="width: 60px; height: 60px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 2px solid #F39C12; overflow: hidden; flex-shrink: 0;">
                                 ${window.alumniApp.renderPhoto(personal.photo, personal.name) || `<span>${personal.name ? personal.name.split(' ').map(n => n[0]).join('').toUpperCase() : '👤'}</span>`}
                             </div>
                             
@@ -8936,7 +8933,7 @@
                         <div style="display: flex; flex-direction: column; height: 100%; padding: 4px; text-align: center; justify-content: space-between;">
                             <!-- Profile photo at top -->
                             <div style="display: flex; justify-content: center; margin-bottom: 6px; flex-shrink: 0;">
-                                <div class="card-photo" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 12px; border: 2px solid rgba(255,255,255,0.4); overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+                                <div class="card-photo" style="width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 12px; border: 2px solid rgba(255,255,255,0.4); overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
                                     ${window.alumniApp.renderPhoto(personal.photo, personal.name) || `<span style="display: flex; align-items: center; justify-content: center;">${personal.name && personal.name.length > 0 ? personal.name.split(' ').map(n => n && n.length > 0 ? n[0] : '').join('').toUpperCase() : '👤'}</span>`}
                                 </div>
                             </div>
