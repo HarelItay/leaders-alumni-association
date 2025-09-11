@@ -3631,26 +3631,39 @@
                         return null;
                     }
                     
+                    console.log(`🔍 Looking for image for: "${cleanName}"`);
+                    
                     // Try to find exact match first
                     let matchedImage = availableImages.find(img => {
                         const imgName = img.replace(/\.(png|jpeg|jpg)$/i, '');
-                        return imgName === cleanName;
+                        const isExactMatch = imgName === cleanName;
+                        if (isExactMatch) {
+                            console.log(`  ✅ Exact match: "${imgName}" === "${cleanName}"`);
+                        }
+                        return isExactMatch;
                     });
                     
                     // If no exact match, try partial matching
                     if (!matchedImage) {
+                        console.log(`  🔄 No exact match, trying partial matching...`);
                         matchedImage = availableImages.find(img => {
                             const imgName = img.replace(/\.(png|jpeg|jpg)$/i, '');
-                            return imgName.toLowerCase().includes(cleanName.toLowerCase()) || 
-                                   cleanName.toLowerCase().includes(imgName.toLowerCase());
+                            const partialMatch = imgName.toLowerCase().includes(cleanName.toLowerCase()) || 
+                                               cleanName.toLowerCase().includes(imgName.toLowerCase());
+                            if (partialMatch) {
+                                console.log(`  ✅ Partial match: "${imgName}" <-> "${cleanName}"`);
+                            }
+                            return partialMatch;
                         });
                     }
                     
                     if (matchedImage) {
-                        console.log(`✅ Found local image for ${cleanName}: ${matchedImage}`);
+                        console.log(`✅ Found local image for "${cleanName}": ${matchedImage}`);
                         return `images/profiles/${matchedImage}`;
                     } else {
-                        console.log(`❌ No local image found for: ${cleanName}`);
+                        console.log(`❌ No local image found for: "${cleanName}"`);
+                        // Show first 5 available images for comparison
+                        console.log(`  Available images (first 5): ${availableImages.slice(0, 5).join(', ')}`);
                         return null;
                     }
                 } catch (error) {
@@ -3713,6 +3726,15 @@
             async populateAlumniPhotos(alumniData) {
                 console.log(`🔄 Starting to populate photos for ${alumniData.length} alumni...`);
                 
+                // Debug: Show first 10 alumni names from Google Sheets
+                console.log('📋 First 10 alumni names from Google Sheets:');
+                alumniData.slice(0, 10).forEach((alumni, index) => {
+                    console.log(`  ${index + 1}. "${alumni.personal.name}"`);
+                });
+                
+                let matchedCount = 0;
+                let unmatchedNames = [];
+                
                 const promises = alumniData.map(async (alumni) => {
                     const fullName = alumni.personal.name;
                     if (!fullName || fullName === 'Anonymous') {
@@ -3721,11 +3743,26 @@
                     }
                     
                     const localImageUrl = await this.getLocalProfileImage(fullName);
-                    alumni.personal.photo = localImageUrl || this.getRandomEmoji();
+                    if (localImageUrl) {
+                        matchedCount++;
+                        alumni.personal.photo = localImageUrl;
+                    } else {
+                        unmatchedNames.push(fullName);
+                        alumni.personal.photo = this.getRandomEmoji();
+                    }
                 });
                 
                 await Promise.all(promises);
-                console.log(`✅ Completed populating photos for all alumni`);
+                console.log(`✅ Photo matching complete: ${matchedCount} matched, ${unmatchedNames.length} unmatched`);
+                
+                // Show unmatched names for debugging
+                if (unmatchedNames.length > 0) {
+                    console.log('❌ Unmatched alumni names (first 10):');
+                    unmatchedNames.slice(0, 10).forEach((name, index) => {
+                        console.log(`  ${index + 1}. "${name}"`);
+                    });
+                }
+                
                 return alumniData;
             }
 
