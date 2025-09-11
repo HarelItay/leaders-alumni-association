@@ -3824,13 +3824,25 @@
                 
                 console.log(`🔍 Photo empty check for "${alumniName}": ${isEmpty} (photo: "${photo}")`);
                 
+                // Check if it's a local image path (our new system)
+                if (photo && photo.startsWith('images/profiles/')) {
+                    console.log(`✅ Using local image for "${alumniName}": ${photo}`);
+                    return `<img src="${photo}" alt="${alumniName} Profile" onload="this.style.opacity=1; console.log('✅ Local image loaded: ${photo}')" onerror="console.log('❌ Local image failed: ${photo}'); this.outerHTML='<div class=\\'photo-placeholder\\'>📷</div>'" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; opacity: 0; transition: opacity 0.3s ease;">`;
+                }
+                
+                // Check if it's an emoji (fallback)
+                if (photo && /[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/u.test(photo)) {
+                    console.log(`😊 Using emoji for "${alumniName}": ${photo}`);
+                    return `<div class="photo-placeholder">${photo}</div>`;
+                }
+                
                 // If no valid photo, show placeholder (photos are populated asynchronously during data loading)
                 if (isEmpty) {
                     console.log(`📷 No photo available for "${alumniName}", showing placeholder`);
                     return `<div class="photo-placeholder">📷</div>`;
                 }
                 
-                // Clean up the photo value
+                // Clean up the photo value (legacy URL handling for any remaining URLs)
                 const cleanPhoto = photo.toString().trim();
                 
                 // Convert Google Drive shared links to direct URLs
