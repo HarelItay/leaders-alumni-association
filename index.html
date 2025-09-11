@@ -2698,26 +2698,42 @@
 
         @media (max-width: 480px) {
             .cards-container {
-                grid-template-columns: 1fr;
-                gap: 1rem;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
                 padding: 0.5rem;
             }
 
             .alumni-card {
-                min-height: 280px;
+                min-height: 220px;
+                font-size: 0.75rem;
             }
 
             .card-content {
-                padding: 1.25rem 1rem;
+                padding: 0.75rem 0.75rem;
             }
 
             .professional-info {
-                padding: 0.875rem;
+                padding: 0.5rem;
+            }
+            
+            .alumni-card h3 {
+                font-size: 1.1rem;
+                margin-bottom: 0.25rem;
+                font-weight: 700;
+            }
+            
+            .alumni-card .role {
+                font-size: 0.6rem;
+                line-height: 1.2;
+            }
+            
+            .alumni-card .company {
+                font-size: 0.65rem;
             }
 
             .profile-photo {
-                width: 80px;
-                height: 80px;
+                width: 60px;
+                height: 60px;
             }
 
             .clustering-section {
@@ -2813,14 +2829,44 @@
             }
 
             .cards-container {
-                grid-template-columns: 1fr;
-                gap: 0.75rem;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
                 padding: 0.25rem;
             }
 
             .alumni-card {
                 min-width: auto;
-                max-width: calc(100vw - 1rem);
+                max-width: calc(50vw - 1rem);
+                min-height: 200px;
+                font-size: 0.7rem;
+            }
+            
+            .card-content {
+                padding: 0.5rem 0.5rem;
+            }
+            
+            .professional-info {
+                padding: 0.375rem;
+            }
+            
+            .alumni-card h3 {
+                font-size: 1rem;
+                margin-bottom: 0.2rem;
+                font-weight: 700;
+            }
+            
+            .alumni-card .role {
+                font-size: 0.55rem;
+                line-height: 1.1;
+            }
+            
+            .alumni-card .company {
+                font-size: 0.6rem;
+            }
+            
+            .profile-photo {
+                width: 50px;
+                height: 50px;
             }
 
             .logo-image {
@@ -5687,6 +5733,26 @@
                     const grid = document.createElement('div');
                     grid.className = 'company-grid';
                     grid.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; padding: 1rem;';
+                    
+                    // Add responsive behavior for mobile: 2 companies per row
+                    const mediaQuery = window.matchMedia('(max-width: 768px)');
+                    const updateGridForMobile = () => {
+                        if (mediaQuery.matches) {
+                            // Mobile: 2 companies per row
+                            grid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+                            grid.style.gap = '1rem';
+                            grid.style.padding = '0.5rem';
+                        } else {
+                            // Desktop: auto-fill with minmax
+                            grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
+                            grid.style.gap = '1.5rem';
+                            grid.style.padding = '1rem';
+                        }
+                    };
+                    
+                    // Apply initial styles and listen for changes
+                    updateGridForMobile();
+                    mediaQuery.addListener(updateGridForMobile);
 
                     Object.entries(companies).forEach(([companyName, data]) => {
                         const companyCard = this.createCompanyCard(companyName, data);
@@ -5752,9 +5818,48 @@
                     justify-content: space-between;
                 `;
                 
+                // Add responsive sizing for mobile
+                const mobileMediaQuery = window.matchMedia('(max-width: 768px)');
+                const updateCardForMobile = () => {
+                    if (mobileMediaQuery.matches) {
+                        // Mobile: smaller cards for 2 per row
+                        card.style.height = '240px';
+                        card.style.padding = '1rem';
+                        card.style.borderRadius = '10px';
+                    } else {
+                        // Desktop: original size
+                        card.style.height = '280px';
+                        card.style.padding = '1.5rem';
+                        card.style.borderRadius = '12px';
+                    }
+                };
+                
+                // Apply initial styles and listen for changes
+                updateCardForMobile();
+                mobileMediaQuery.addListener(updateCardForMobile);
+                
                 // Logo container
                 const logoContainer = document.createElement('div');
                 logoContainer.style.cssText = 'width: 80px; height: 80px; margin: 0 auto 1rem auto; border-radius: 50%; overflow: hidden; background: #f8f9fa; display: flex; align-items: center; justify-content: center;';
+                
+                // Add responsive logo sizing for mobile
+                const updateLogoForMobile = () => {
+                    if (mobileMediaQuery.matches) {
+                        // Mobile: smaller logo
+                        logoContainer.style.width = '60px';
+                        logoContainer.style.height = '60px';
+                        logoContainer.style.marginBottom = '0.75rem';
+                    } else {
+                        // Desktop: original size
+                        logoContainer.style.width = '80px';
+                        logoContainer.style.height = '80px';
+                        logoContainer.style.marginBottom = '1rem';
+                    }
+                };
+                
+                // Apply initial styles and listen for changes
+                updateLogoForMobile();
+                mobileMediaQuery.addListener(updateLogoForMobile);
                 
                 if (data.logo_url && data.logo_url.trim()) {
                     const logo = document.createElement('img');
@@ -5776,10 +5881,43 @@
                 // Company info
                 const info = document.createElement('div');
                 info.style.cssText = 'flex-grow: 1; display: flex; flex-direction: column; justify-content: center;';
+                // Create safe ID by removing all special characters and spaces
+                const safeCompanyId = companyName.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+                
                 info.innerHTML = `
-                    <h3 style="margin: 0 0 0.5rem 0; font-size: 1.25rem; color: #2c3e50; line-height: 1.3; min-height: 2.6rem; display: flex; align-items: center; justify-content: center;">${companyName}</h3>
-                    <p style="margin: 0; color: #7f8c8d; font-size: 0.9rem;">${data.count} alumni</p>
+                    <h3 class="company-name-text" style="margin: 0 0 0.5rem 0; font-size: 1.25rem; color: #2c3e50; line-height: 1.3; min-height: 2.6rem; display: flex; align-items: center; justify-content: center;">${companyName}</h3>
+                    <p class="alumni-count-text" style="margin: 0; color: #7f8c8d; font-size: 0.9rem;">${data.count} alumni</p>
                 `;
+                
+                // Add responsive font sizing for mobile
+                const companyNameEl = info.querySelector('.company-name-text');
+                const alumniCountEl = info.querySelector('.alumni-count-text');
+                
+                const updateFontsForMobile = () => {
+                    if (mobileMediaQuery.matches) {
+                        // Mobile: smaller fonts
+                        if (companyNameEl) {
+                            companyNameEl.style.fontSize = '1rem';
+                            companyNameEl.style.minHeight = '2rem';
+                        }
+                        if (alumniCountEl) {
+                            alumniCountEl.style.fontSize = '0.8rem';
+                        }
+                    } else {
+                        // Desktop: original sizes
+                        if (companyNameEl) {
+                            companyNameEl.style.fontSize = '1.25rem';
+                            companyNameEl.style.minHeight = '2.6rem';
+                        }
+                        if (alumniCountEl) {
+                            alumniCountEl.style.fontSize = '0.9rem';
+                        }
+                    }
+                };
+                
+                // Apply initial styles and listen for changes
+                updateFontsForMobile();
+                mobileMediaQuery.addListener(updateFontsForMobile);
                 
                 topSection.appendChild(logoContainer);
                 topSection.appendChild(info);
