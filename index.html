@@ -8279,7 +8279,7 @@
                     <!-- Photo at top -->
                     <div style="display: flex; align-items: center; justify-content: center; margin-bottom: auto;">
                         <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 1rem; overflow: hidden;">
-                            ${personal.photo && personal.photo !== '👤' ? `<img src="${personal.photo}" style="width: 100%; height: 100%; object-fit: cover;">` : '👤'}
+                            ${this.renderPhoto(personal.photo, personal.name) || '👤'}
                         </div>
                     </div>
                     
@@ -8661,8 +8661,7 @@
                         <div class="mobile-profile-section" style="display: flex; align-items: center; gap: 0.75rem;">
                             <!-- Profile photo on the left -->
                             <div class="mobile-profile-photo" style="width: 50px; height: 50px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 2px solid #F39C12; overflow: hidden; flex-shrink: 0;">
-                                ${personal.photo && isValidImageUrl(personal.photo) ? `<img src="${personal.photo}" style="width: 100%; height: 100%; object-fit: cover;">` : ''}
-                                <span style="${personal.photo && isValidImageUrl(personal.photo) ? 'display: none;' : ''}">${personal.name ? personal.name.split(' ').map(n => n[0]).join('').toUpperCase() : '👤'}</span>
+                                ${this.renderPhoto(personal.photo, personal.name) || `<span>${personal.name ? personal.name.split(' ').map(n => n[0]).join('').toUpperCase() : '👤'}</span>`}
                             </div>
                             
                             <!-- Name and role in center -->
@@ -8966,8 +8965,7 @@
                             <!-- Profile photo at top -->
                             <div style="display: flex; justify-content: center; margin-bottom: 6px; flex-shrink: 0;">
                                 <div class="card-photo" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 12px; border: 2px solid rgba(255,255,255,0.4); overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
-                                    ${personal.photo && isValidImageUrl(personal.photo) ? `<img src="${personal.photo}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">` : ''}
-                                    <span style="${personal.photo && isValidImageUrl(personal.photo) ? 'display: none;' : 'display: flex; align-items: center; justify-content: center;'}">${personal.name && personal.name.length > 0 ? personal.name.split(' ').map(n => n && n.length > 0 ? n[0] : '').join('').toUpperCase() : '👤'}</span>
+                                    ${this.renderPhoto(personal.photo, personal.name) || `<span style="display: flex; align-items: center; justify-content: center;">${personal.name && personal.name.length > 0 ? personal.name.split(' ').map(n => n && n.length > 0 ? n[0] : '').join('').toUpperCase() : '👤'}</span>`}
                                 </div>
                             </div>
                             
