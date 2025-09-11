@@ -3527,7 +3527,7 @@
                         id: row.id || `alumni_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
                         personal: {
                             name: fullName || 'Anonymous',
-                            photo: row.photo || row.Photo || row.PHOTO || row['Photo URL'] || row['photo_url'] || row.image || row.Image || this.getRandomEmoji(),
+                            photo: this.getLocalProfileImage(fullName) || this.getRandomEmoji(),
                             graduation_year: parseInt(row.graduation_year) || new Date().getFullYear(),
                             degree: row.degree || row.Degree || '',
                             location: {
@@ -3569,7 +3569,7 @@
                         id: csvRow.id || `alumni_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
                         personal: {
                             name: csvRow.name || 'Anonymous',
-                            photo: csvRow.photo || '👤',
+                            photo: this.getLocalProfileImage(csvRow.name) || this.getRandomEmoji(),
                             graduation_year: parseInt(csvRow.class) || new Date().getFullYear(), // Fixed: use 'class' field
                             degree: csvRow.degree || '', // Already correct
                             location: {
@@ -3598,6 +3598,54 @@
                     };
                 } catch (error) {
                     console.warn('Error converting CSV row:', error, csvRow);
+                    return null;
+                }
+            }
+
+            getLocalProfileImage(fullName) {
+                if (!fullName || fullName.trim() === '' || fullName === 'Anonymous') {
+                    return null;
+                }
+                
+                // Clean the name for filename matching
+                const cleanName = fullName.trim();
+                
+                // List of available profile images (based on the files in /images/profiles/)
+                const availableImages = [
+                    'Ayal Alster Asia.png',
+                    'Carmel Ariel.png', 
+                    'Elchanan Henshke.png',
+                    'Idan Mizrahi.png',
+                    'Nashwa Gnamy.png',
+                    'Shai Turjeman.png',
+                    'Shani Dabull.jpeg',
+                    'Shiri Rosenman.png',
+                    'Yael Agur Orgal.png',
+                    'Yonatan Ben Gur.png',
+                    'Yotam Naor.png',
+                    'Yuval Zohar.png'
+                ];
+                
+                // Try to find exact match first
+                let matchedImage = availableImages.find(img => {
+                    const imgName = img.replace(/\.(png|jpeg|jpg)$/i, '');
+                    return imgName === cleanName;
+                });
+                
+                // If no exact match, try partial matching
+                if (!matchedImage) {
+                    matchedImage = availableImages.find(img => {
+                        const imgName = img.replace(/\.(png|jpeg|jpg)$/i, '');
+                        return imgName.toLowerCase().includes(cleanName.toLowerCase()) || 
+                               cleanName.toLowerCase().includes(imgName.toLowerCase());
+                    });
+                }
+                
+                if (matchedImage) {
+                    console.log(`✅ Found local image for ${cleanName}: ${matchedImage}`);
+                    return `images/profiles/${matchedImage}`;
+                } else {
+                    console.log(`❌ No local image found for: ${cleanName}`);
                     return null;
                 }
             }
