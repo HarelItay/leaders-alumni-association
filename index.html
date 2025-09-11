@@ -3632,6 +3632,7 @@
                     }
                     
                     console.log(`🔍 Looking for image for: "${cleanName}"`);
+                    console.log(`📁 Available images (first 10): ${availableImages.slice(0, 10).join(', ')}`);
                     
                     // Try to find exact match first
                     let matchedImage = availableImages.find(img => {
@@ -3825,7 +3826,7 @@
                 console.log(`🔍 Photo empty check for "${alumniName}": ${isEmpty} (photo: "${photo}")`);
                 
                 // Check if it's a local image path (our new system)
-                if (photo && photo.startsWith('images/profiles/')) {
+                if (photo && (photo.startsWith('images/profiles/') || photo.startsWith('./images/profiles/'))) {
                     console.log(`✅ Using local image for "${alumniName}": ${photo}`);
                     return `<img src="${photo}" alt="${alumniName} Profile" onload="this.style.opacity=1; console.log('✅ Local image loaded: ${photo}')" onerror="console.log('❌ Local image failed: ${photo}'); this.outerHTML='<div class=\\'photo-placeholder\\'>📷</div>'" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; opacity: 0; transition: opacity 0.3s ease;">`;
                 }
