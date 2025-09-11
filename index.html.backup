@@ -3069,7 +3069,7 @@
     <header class="header">
         <div class="header-content">
             <div class="logo" onclick="window.alumniApp?.showHomePage()" style="cursor: pointer; text-align: center !important;">
-                <img src="https://raw.githubusercontent.com/HarelItay/leaders-alumni-association/main/images/companies/Leaders%20Alumni_full%20color.svg?cachebust=12345" alt="LEADERS Alumni Association" style="width: 350px !important; height: auto !important; display: block !important; margin: 0 auto 0.5rem auto !important; transition: transform 0.3s ease !important;" onload="">
+                <img src="https://raw.githubusercontent.com/HarelItay/leaders-alumni-association/main/images/companies/Leaders%20Alumni_full%20color.svg?cachebust=12345" alt="LEADERS Alumni Association" style="width: 350px !important; height: auto !important; display: block !important; margin: 0 auto 0.5rem auto !important; transition: transform 0.3s ease !important;" onload="console.log('Logo loaded with dimensions:', this.naturalWidth, 'x', this.naturalHeight)">
                 <p class="tagline" style="text-align: center; margin: 0 auto;">Where LEADERS alumni connect, grow, and give back</p>
             </div>
             
@@ -3289,7 +3289,7 @@
     </div>
 
     <script>
-        
+        console.log('🚀 STARTING ENHANCED ALUMNI NETWORKING APP - SINGLE FILE VERSION');
         
         // Enhanced Alumni App - Complete Single File Version with NO module dependencies
         class EnhancedAlumniApp {
@@ -3302,7 +3302,7 @@
                 this.currentFilters = { all: true };
                 this.statsAnimated = false;
                 
-                
+                console.log('📱 Initializing Enhanced Alumni App...');
                 this.init();
             }
 
@@ -3377,42 +3377,42 @@
 
             async init() {
                 try {
-                    
+                    console.log('📊 Step 1: Loading data...');
                     await this.loadData();
                     
-                    
+                    console.log('🔧 Step 2: Setting up elements...');
                     this.initializeElements();
                     
-                    
+                    console.log('👂 Step 3: Setting up event listeners...');
                     this.setupEventListeners();
                     
 
                     
-                    
+                    console.log('🎤 Step 4: Setting up voice search...');
                     this.setupVoiceSearch();
                     
-                    
+                    console.log('🎯 Step 5: Updating stats...');
                     this.updateStats();
                     
-                    
+                    console.log('📊 Step 6: Setting up stats animation...');
                     this.animateStats();
                     
-                    
+                    console.log('🎨 Step 7: Rendering cards...');
                     this.renderCards();
                     
-                    
+                    console.log('📺 Step 8: Hiding loading screen...');
                     this.hideLoadingScreen();
                     
-                    
+                    console.log('🔝 Step 9: Scrolling to top...');
                     // Auto-scroll to top on page load/refresh
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                     
-                    
+                    console.log('🎉 Step 10: App loaded successfully...');
                     // Notifications disabled per user request
                     
-                    
+                    console.log('✅ Enhanced Alumni App initialized successfully!');
                 } catch (error) {
-                    
+                    console.error('❌ Error loading enhanced app:', error);
                     this.hideLoadingScreen();
                     this.showError();
                 }
@@ -3440,15 +3440,15 @@
                 });
                 
                 if (missingElements.length > 0) {
-                    
+                    console.warn('⚠️ Missing elements:', missingElements);
                 } else {
-                    
+                    console.log('✅ All elements initialized successfully');
                 }
             }
 
             async loadData() {
                 try {
-                    
+                    console.log('📡 Attempting to fetch alumni data...');
                     
                     // Load directly from Google Sheets only
                     let data = await this.tryLoadGoogleSheets();
@@ -3459,34 +3459,34 @@
                     this.alumniData = data;
                     this.filteredData = [...this.alumniData];
                     this.updateLoadingProgress(50);
-                    
+                    console.log(`✅ Loaded ${this.alumniData.length} alumni records`);
                     
                     // Populate photos asynchronously
-                    
+                    console.log('🖼️ Step 1.5: Populating alumni photos...');
                     this.updateLoadingProgress(60);
                     await this.populateAlumniPhotos(this.alumniData);
                     this.updateLoadingProgress(70);
-                    
+                    console.log('✅ Photos populated successfully');
                 } catch (error) {
-                    
-                    
+                    console.error('💥 Failed to load Google Sheets data:', error);
+                    console.log('📝 Using enhanced fallback data - showing sample alumni');
                     this.alumniData = await this.createEnhancedFallbackData();
                     this.filteredData = [...this.alumniData];
-                    
+                    console.log(`✅ Created ${this.alumniData.length} fallback alumni records`);
                     
                     // Populate photos for fallback data too
-                    
+                    console.log('🖼️ Populating fallback alumni photos...');
                     await this.populateAlumniPhotos(this.alumniData);
-                    
+                    console.log('✅ Fallback photos populated successfully');
                     
                     // Show user-friendly error message
-                    
+                    console.log('⚠️ Unable to load live data. Showing sample alumni.');
                 }
             }
 
             async tryLoadGoogleSheets() {
                 try {
-                    
+                    console.log('🌐 Trying to load Google Sheets data...');
                     // Google Sheets CSV export URL (published version)
                     const googleSheetsUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRNZd56-34Smsl9_wFik9OsErpCSN6yDjRCh-3Rbt7i2o0szFf6J8JzsaUXB_Xw0onxOcpMMhxBH-_h/pub?output=csv';
                     
@@ -3498,10 +3498,10 @@
                             'Accept': 'text/csv'
                         }
                     });
-                    
+                    console.log('📡 Google Sheets fetch response:', response.status, response.statusText);
                     
                     if (!response.ok) {
-                        
+                        console.log('❌ Google Sheets fetch failed:', response.status);
                         return null;
                     }
                     
@@ -3509,11 +3509,11 @@
                     
                     // Check if we got HTML instead of CSV (means sheet isn't published or has redirect)
                     if (csvText.includes('<HTML>') || csvText.includes('<html>') || csvText.includes('Temporary Redirect')) {
-                        
+                        console.log('⚠️ Google Sheets returned HTML/redirect - trying alternative approach...');
                         
                         // Try alternative URL format
                         const alternativeUrl = 'https://docs.google.com/spreadsheets/d/1zeUrlPCj7ZAmw1SHd8nvnYky5mCvpKZtNonb6oXfPA0/export?format=csv&gid=0';
-                        
+                        console.log('🔄 Trying alternative Google Sheets URL...');
                         
                         const altResponse = await fetch(alternativeUrl, {
                             method: 'GET',
@@ -3523,10 +3523,10 @@
                         if (altResponse.ok) {
                             const altCsvText = await altResponse.text();
                             if (!altCsvText.includes('<HTML>') && !altCsvText.includes('<html>')) {
-                                
+                                console.log('✅ Alternative URL worked!');
                                 const altData = this.parseGoogleSheetsCSV(altCsvText);
                                 if (altData.length > 0) {
-                                    
+                                    console.log(`✅ Successfully loaded ${altData.length} records from alternative Google Sheets URL`);
                                     return altData;
                                 }
                             }
@@ -3535,81 +3535,81 @@
                         return null;
                     }
                     
-                    
-                    
+                    console.log('📄 Google Sheets CSV text length:', csvText.length, 'characters');
+                    console.log('📄 Google Sheets first 200 chars:', csvText.substring(0, 200));
                     
                     const data = this.parseGoogleSheetsCSV(csvText);
-                    
-                    
+                    console.log(`✅ Successfully loaded ${data.length} records from Google Sheets`);
+                    console.log('👥 First 3 names:', data.slice(0, 3).map(a => a.personal.name));
                     
                     return data;
                 } catch (error) {
-                    
+                    console.error('⚠️ Google Sheets loading failed:', error);
                     return null;
                 }
             }
 
             async tryLoadCSV() {
                 try {
-                    
+                    console.log('📊 Trying to load local CSV data...');
                     const response = await fetch('data/alumni.csv?t=' + Date.now()); // Add timestamp to prevent caching
-                    
+                    console.log('📡 CSV fetch response:', response.status, response.statusText);
                     
                     if (!response.ok) {
-                        
+                        console.log('❌ CSV fetch failed:', response.status);
                         return null;
                     }
                     
                     const csvText = await response.text();
-                    
-                    
+                    console.log('📄 CSV text length:', csvText.length, 'characters');
+                    console.log('📄 CSV first 200 chars:', csvText.substring(0, 200));
                     
                     const data = this.parseCSV(csvText);
-                    
-                    
+                    console.log(`✅ Successfully loaded ${data.length} records from CSV`);
+                    console.log('👥 First 3 names:', data.slice(0, 3).map(a => a.personal.name));
                     
                     return data;
                 } catch (error) {
-                    
+                    console.error('⚠️ CSV loading failed:', error);
                     return null;
                 }
             }
 
             async tryLoadJSON() {
                 try {
-                    
+                    console.log('📋 Trying to load JSON data...');
                     const response = await fetch('data/alumni.json');
                     if (!response.ok) {
-                        
+                        console.log('📋 JSON file not found (this is expected - using CSV instead)');
                         return null;
                     }
                     
                     const data = await response.json();
-                    
+                    console.log(`✅ Loaded ${data.length} records from JSON`);
                     return data;
                 } catch (error) {
-                    
+                    console.log('⚠️ JSON loading failed:', error.message);
                     return null;
                 }
             }
 
             parseGoogleSheetsCSV(csvText) {
-                
+                console.log('🔄 Parsing Google Sheets CSV data...');
                 const lines = csvText.trim().split('\n');
                 const headers = lines[0].split(',').map(h => h.trim());
                 const alumni = [];
                 
-                
-                
+                console.log('📋 Headers found:', headers);
+                console.log('🔍 Looking for photo-related headers:');
                 headers.forEach((header, index) => {
                     if (header.toLowerCase().includes('photo') || header.toLowerCase().includes('image') || header.toLowerCase().includes('pic')) {
-                        
+                        console.log(`  Column ${index}: "${header}"`);
                     }
                 });
-                
+                console.log('💼 Looking for LinkedIn/Jobs headers:');
                 headers.forEach((header, index) => {
                     if (header.toLowerCase().includes('linkedin') || header.toLowerCase().includes('job') || header.toLowerCase().includes('role') || header.toLowerCase().includes('link')) {
-                        
+                        console.log(`  Column ${index}: "${header}"`);
                     }
                 });
 
@@ -3627,25 +3627,25 @@
                                            alumniData.Name.toLowerCase().includes('adi ben nun') ||
                                            alumniData.Name.toLowerCase().includes('missing') ||
                                            !alumniData.Photo && !alumniData.photo && !alumniData.PHOTO)) {
-                        
-                        
-                        
-                        
-                        
-                        
-                        
+                        console.log(`🔍 DEBUGGING MISSING IMAGE FOR: ${alumniData.Name}`);
+                        console.log('📄 Raw line:', lines[i]);
+                        console.log('📋 Parsed row object:', alumniData);
+                        console.log('📸 Photo field value:', alumniData.Photo || alumniData.photo || alumniData.PHOTO || 'NOT FOUND');
+                        console.log('🏢 Company Logo URL field:', alumniData['Company Logo URL'] || alumniData.company_logo_url || 'NOT FOUND');
+                        console.log('💼 Jobs Link field:', alumniData['jobs link'] || alumniData['Jobs Link'] || alumniData['JOBS LINK'] || 'NOT FOUND');
+                        console.log('💼 LinkedIn Open Roles field:', alumniData['LinkedIn Open Roles'] || alumniData['linkedin_open_roles'] || alumniData['company_open_roles_url'] || 'NOT FOUND');
                         
                         // Check all possible photo field variations
                         Object.keys(alumniData).forEach(key => {
                             if (key.toLowerCase().includes('photo') || key.toLowerCase().includes('image') || key.toLowerCase().includes('pic')) {
-                                
+                                console.log(`📸 Photo-related field "${key}":`, alumniData[key]);
                             }
                         });
                         
                         // Show ALL fields to see what we have
-                        
+                        console.log('📋 ALL FIELDS for', alumniData.Name + ':');
                         Object.keys(alumniData).forEach(key => {
-                            
+                            console.log(`  "${key}": "${alumniData[key]}"`);
                         });
                     }
 
@@ -3654,7 +3654,12 @@
                     if (convertedAlumni && convertedAlumni.personal.name) {
                         // Debug first few alumni to see their professional data including open roles
                         if (alumni.length < 5) {
-                            // Alumni entry created
+                            console.log(`👤 Alumni #${alumni.length + 1} - ${convertedAlumni.personal.name}:`, {
+                                company: convertedAlumni.professional.company,
+                                company_logo_url: convertedAlumni.professional.company_logo_url,
+                                company_open_roles_url: convertedAlumni.professional.company_open_roles_url,
+                                full_professional: convertedAlumni.professional
+                            });
                         }
                         // Additional debugging for people with missing images after conversion
                         const name = convertedAlumni.personal.name.toLowerCase();
@@ -3664,19 +3669,19 @@
                                         !convertedAlumni.personal.photo.includes('emoji');
                         
                         if (name.includes('adi nechemia') || name.includes('adi ben nun') || !hasImage) {
-                            
-                            
-                            
-                            
-                            
-                            
-                            
+                            console.log(`🔍 AFTER CONVERSION - ${convertedAlumni.personal.name}:`);
+                            console.log('👤 Name:', convertedAlumni.personal.name);
+                            console.log('📸 Photo:', convertedAlumni.personal.photo);
+                            console.log('📸 Has valid image:', hasImage);
+                            console.log('🏢 Company:', convertedAlumni.professional.company);
+                            console.log('🔗 Company Logo URL:', convertedAlumni.professional.company_logo_url);
+                            console.log('💼 Company Open Roles URL:', convertedAlumni.professional.company_open_roles_url);
                         }
                         alumni.push(convertedAlumni);
                     }
                 }
 
-                
+                console.log(`📊 Parsed ${alumni.length} valid alumni from Google Sheets`);
                 return alumni;
             }
 
@@ -3768,7 +3773,7 @@
                         }
                     };
                 } catch (error) {
-                    
+                    console.warn('Error converting Google Sheets row:', error, row);
                     return null;
                 }
             }
@@ -3807,7 +3812,7 @@
                         }
                     };
                 } catch (error) {
-                    
+                    console.warn('Error converting CSV row:', error, csvRow);
                     return null;
                 }
             }
@@ -3819,7 +3824,7 @@
                 
                 // Clean the name for filename matching
                 const cleanName = fullName.trim();
-                
+                console.log(`🔍 Trying to load image for: "${cleanName}"`);
                 
                 // Try different file extensions and formats
                 const possibleFormats = [
@@ -3830,29 +3835,29 @@
                 
                 for (const filename of possibleFormats) {
                     const imagePath = `images/profiles/${filename}`;
-                    
+                    console.log(`  🔍 Trying: ${imagePath}`);
                     
                     try {
                         // Try to load the image to see if it exists
                         const response = await fetch(imagePath, { method: 'HEAD' });
                         if (response.ok) {
-                            
+                            console.log(`  ✅ Found image: ${imagePath}`);
                             return imagePath;
                         } else {
-                            
+                            console.log(`  ❌ Not found: ${imagePath} (${response.status})`);
                         }
                     } catch (error) {
-                        
+                        console.log(`  ❌ Error loading: ${imagePath}`, error);
                     }
                 }
                 
-                
+                console.log(`❌ No image found for "${cleanName}"`);
                 return null;
             }
 
             async getAvailableProfileImages() {
                 // Return empty array - we'll try to load images directly instead of pre-listing them
-                
+                console.log('📁 Skipping image list - will try direct loading');
                 return [];
             }
 
@@ -3901,12 +3906,12 @@
             }
 
             async populateAlumniPhotos(alumniData) {
-                
+                console.log(`🔄 Starting to populate photos for ${alumniData.length} alumni...`);
                 
                 // Debug: Show first 10 alumni names from Google Sheets
-                
+                console.log('📋 First 10 alumni names from Google Sheets:');
                 alumniData.slice(0, 10).forEach((alumni, index) => {
-                    
+                    console.log(`  ${index + 1}. "${alumni.personal.name}"`);
                 });
                 
                 let matchedCount = 0;
@@ -3920,27 +3925,27 @@
                     }
                     
                     // ALWAYS try to load local image, ignore any Google Sheets photo data
-                    
+                    console.log(`🔄 Processing "${fullName}" - ignoring Google Sheets photo data, loading local image only`);
                     const localImageUrl = await this.getLocalProfileImage(fullName);
                     if (localImageUrl) {
                         matchedCount++;
                         alumni.personal.photo = localImageUrl;
-                        
+                        console.log(`✅ Local image found for "${fullName}": ${localImageUrl}`);
                     } else {
                         unmatchedNames.push(fullName);
                         alumni.personal.photo = this.getRandomEmoji();
-                        
+                        console.log(`❌ No local image for "${fullName}", using emoji`);
                     }
                 });
                 
                 await Promise.all(promises);
-                
+                console.log(`✅ Photo matching complete: ${matchedCount} matched, ${unmatchedNames.length} unmatched`);
                 
                 // Show unmatched names for debugging
                 if (unmatchedNames.length > 0) {
-                    
+                    console.log('❌ Unmatched alumni names (first 10):');
                     unmatchedNames.slice(0, 10).forEach((name, index) => {
-                        
+                        console.log(`  ${index + 1}. "${name}"`);
                     });
                 }
                 
@@ -4083,7 +4088,7 @@
 
             async createEnhancedFallbackData() {
                 // If CSV fails, try to load it directly as fallback
-                
+                console.log('⚠️ Creating fallback data - CSV loading must have failed');
                 try {
                     // Try one more time to load CSV directly
                     const response = await fetch('data/alumni.csv');
@@ -4091,16 +4096,16 @@
                         const csvText = await response.text();
                         const csvData = this.parseCSV(csvText);
                         if (csvData.length > 0) {
-                            
+                            console.log('✅ Fallback: Successfully loaded CSV on second try');
                             return csvData;
                         }
                     }
                 } catch (error) {
-                    
+                    console.log('⚠️ Fallback CSV attempt also failed:', error);
                 }
                 
                 // If still no luck, return your real alumni as hardcoded fallback
-                
+                console.log('📝 Using hardcoded alumni data as final fallback');
                 return [
                     {
                         id: "alumni_001",
@@ -4176,7 +4181,7 @@
 
             async createEnhancedFallbackData() {
                 // If CSV fails, try to load it directly as fallback
-                
+                console.log('⚠️ Creating fallback data - CSV loading must have failed');
                 try {
                     // Try one more time to load CSV directly
                     const response = await fetch('data/alumni.csv');
@@ -4184,16 +4189,16 @@
                         const csvText = await response.text();
                         const csvData = this.parseCSV(csvText);
                         if (csvData.length > 0) {
-                            
+                            console.log('✅ Fallback: Successfully loaded CSV on second try');
                             return csvData;
                         }
                     }
                 } catch (error) {
-                    
+                    console.log('⚠️ Fallback CSV attempt also failed:', error);
                 }
                 
                 // If still no luck, return your real alumni as hardcoded fallback
-                
+                console.log('📝 Using hardcoded alumni data as final fallback');
                 return [
                     {
                         id: "alumni_001",
@@ -4319,7 +4324,7 @@
                     }
                 });
 
-                
+                console.log('✅ Event listeners setup complete');
                 
                 // Initialize clustering
                 this.currentClusterMode = 'none';
@@ -4334,7 +4339,7 @@
                 const resultsContainer = document.getElementById('degreeResults');
                 
                 if (!hamburger || !dropdown || !hamburgerSecondary || !dropdownSecondary || !resultsContainer) {
-                    
+                    console.warn('🍔 Degree hamburger menu elements not found');
                     return;
                 }
 
@@ -4350,7 +4355,7 @@
 
                 // No default selection - user must choose from hamburger menu
 
-                
+                console.log('✅ Degree hamburger menu setup complete');
             }
 
             setupPrimaryDegreeHamburger(hamburger, dropdown, degreeClusters, resultsContainer) {
@@ -4623,7 +4628,7 @@
                 const resultsContainer = document.getElementById('industryResults');
                 
                 if (!hamburger || !dropdown || !hamburgerSecondary || !dropdownSecondary || !resultsContainer) {
-                    
+                    console.warn('🍔 Industry hamburger menu elements not found');
                     return;
                 }
 
@@ -4638,7 +4643,7 @@
                 this.setupSecondaryIndustryHamburger(hamburgerSecondary, dropdownSecondary, industryDomains, resultsContainer);
 
                 // No default selection - user must choose from hamburger menu
-                
+                console.log('✅ Industry hamburger menu setup complete');
             }
 
             setupPrimaryIndustryHamburger(hamburger, dropdown, industryDomains, resultsContainer) {
@@ -4830,7 +4835,7 @@
                 });
 
                 resultsContainer.appendChild(expGrid);
-                
+                console.log(`🏢 Showing ${alumni.length} alumni for industry: ${industryName}`);
             }
 
             showDegreeAlumniGrid(degreeName, alumni) {
@@ -4851,13 +4856,13 @@
                 
                 resultsContainer.appendChild(grid);
                 
-                
+                console.log(`🎯 Showing ${alumni.length} alumni with ${degreeName} degree`);
             }
 
             setupVoiceSearch() {
                 if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                     this.elements.voiceSearch?.style.setProperty('display', 'none');
-                    
+                    console.log('⚠️ Voice search not supported');
                     return;
                 }
 
@@ -4877,10 +4882,10 @@
                         this.elements.aiSearch.value = transcript;
                         this.performAdvancedSearch(transcript);
                     }
-                    
+                    console.log(`🎤 Voice search: "${transcript}"`);
                 });
 
-                
+                console.log('✅ Voice search setup complete');
             }
 
             toggleVoiceSearch() {
@@ -4892,7 +4897,7 @@
                         this.isVoiceRecording = true;
                         this.elements.voiceSearch?.classList.add('recording');
                     } catch (error) {
-                        
+                        console.log('❌ Unable to start voice recognition');
                     }
                 }
             }
@@ -4932,7 +4937,7 @@
 
             showSearchResults(query, count) {
                 if (query) {
-                    
+                    console.log(`🔍 Found ${count} result${count !== 1 ? 's' : ''} for "${query}"`);
                 }
             }
 
@@ -4972,7 +4977,7 @@
                     container.appendChild(card);
                 });
                 
-                
+                console.log(`✅ Rendered ${this.filteredData.length} cards`);
             }
 
             createEnhancedCard(alumni, index) {
@@ -5110,12 +5115,12 @@
 
             handleConnect(alumniId) {
                 const alumni = this.alumniData.find(a => a.id === alumniId);
-                
+                console.log(`🤝 Connection request sent to ${alumni?.personal?.name}`);
             }
 
             handleMessage(alumniId) {
                 const alumni = this.alumniData.find(a => a.id === alumniId);
-                
+                console.log(`💬 Opening message interface for ${alumni?.personal?.name}`);
             }
 
             showDetailModal(alumni, showConnections = true) {
@@ -5359,7 +5364,7 @@
 
             updateStats() {
                 if (!this.alumniData || this.alumniData.length === 0) {
-                    
+                    console.log('⚠️ No alumni data available for stats');
                     return;
                 }
 
@@ -5390,7 +5395,7 @@
                 if (companiesElement) companiesElement.textContent = '0';
                 if (degreesElement) degreesElement.textContent = '0';
                 
-                
+                console.log(`✅ Stats calculated from real data:`, stats);
             }
 
             calculateRealStats() {
@@ -5437,7 +5442,7 @@
                 const viewport = document.getElementById('viewport-meta');
                 if (viewport) {
                     viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
-                    
+                    console.log('📱 Switched to mobile-responsive viewport');
                 }
             }
             
@@ -5445,13 +5450,13 @@
                 const viewport = document.getElementById('viewport-meta');
                 if (viewport) {
                     viewport.setAttribute('content', 'width=1200, initial-scale=0.5, user-scalable=yes');
-                    
+                    console.log('🖥️ Switched to desktop-fixed viewport');
                 }
             }
 
             // Page Navigation Functions
             showHomePage() {
-                
+                console.log('🏠 Showing home page');
                 const homePage = document.getElementById('home-page');
                 const alumniPage = document.getElementById('alumni-page');
                 const searchContainer = document.getElementById('search-container');
@@ -5471,7 +5476,7 @@
             }
 
             showAlumniPage(filterType = null, filterValue = null) {
-                
+                console.log('👥 Showing alumni page', { filterType, filterValue });
                 const homePage = document.getElementById('home-page');
                 const alumniPage = document.getElementById('alumni-page');
                 const searchContainer = document.getElementById('search-container');
@@ -5513,7 +5518,7 @@
                 }
                 
                 this.renderCards();
-                
+                console.log(`🔍 Applied ${filterType} filter for ${filterValue}: ${this.filteredData.length} results`);
             }
 
             meetRandomAlumni() {
@@ -5521,7 +5526,7 @@
                 const availableAlumni = this.filteredData && this.filteredData.length > 0 ? this.filteredData : this.alumniData;
                 
                 if (!availableAlumni || availableAlumni.length === 0) {
-                    
+                    console.log('No alumni available to meet');
                     return;
                 }
 
@@ -5529,17 +5534,17 @@
                 const randomIndex = Math.floor(Math.random() * availableAlumni.length);
                 const randomAlumni = availableAlumni[randomIndex];
                 
-                
+                console.log('🎲 Meeting random alumni:', randomAlumni.personal?.name || 'Unknown');
                 
                 // Show notification about who we're meeting
-                
+                console.log(`🎲 Meeting random alumni: ${randomAlumni.personal?.name || 'an alumni'}`);
                 
                 // Open their network popup with all connections showing
                 this.showDetailModal(randomAlumni, true);
             }
 
             hideLoadingScreen() {
-                
+                console.log('🔄 Hiding loading screen...');
                 
                 // Multiple fallback methods to ensure loading screen is hidden
                 const loadingScreen = this.elements.loadingScreen || 
@@ -5547,7 +5552,7 @@
                                      document.querySelector('.loading-screen');
                 
                 if (loadingScreen) {
-                    
+                    console.log('✅ Found loading screen, hiding...');
                     this.updateLoadingProgress(100);
                     
                     // Immediate hide with multiple methods
@@ -5557,10 +5562,10 @@
                     setTimeout(() => {
                         loadingScreen.classList.add('hidden');
                         loadingScreen.style.display = 'none';
-                        
+                        console.log('✅ Loading screen hidden successfully!');
                     }, 500);
                 } else {
-                    
+                    console.warn('⚠️ Loading screen not found, but app should be visible');
                 }
             }
 
@@ -5570,12 +5575,12 @@
                     const loadingBar = this.elements?.loadingBar || document.getElementById('loading-bar');
                     if (loadingBar) {
                         loadingBar.style.width = `${percentage}%`;
-                        
+                        console.log(`📊 Loading progress: ${percentage}%`);
                     } else {
-                        
+                        console.log(`📊 Loading progress: ${percentage}% (no loading bar found)`);
                     }
                 } catch (error) {
-                    
+                    console.warn('⚠️ Error updating loading progress:', error);
                 }
             }
 
@@ -5679,7 +5684,7 @@
         Object.assign(EnhancedAlumniApp.prototype, {
             handleClusterClick(button) {
                 const clusterType = button.dataset.cluster;
-                
+                console.log(`📊 Switching to cluster mode: ${clusterType}`);
                 
                 // Update active button
                 document.querySelectorAll('.cluster-btn').forEach(btn => btn.classList.remove('active'));
@@ -5702,7 +5707,7 @@
 
             handleMobileClusterClick(option) {
                 const clusterType = option.dataset.cluster;
-                
+                console.log(`📱 Mobile cluster selected: ${clusterType}`);
                 
                 // Update active mobile option
                 document.querySelectorAll('.mobile-cluster-option').forEach(opt => opt.classList.remove('active'));
@@ -5754,7 +5759,7 @@
                     this.renderCards();
                 }, 200);
                 
-                
+                console.log('🌐 Switched to standard grid layout');
             },
 
             showClassClusters() {
@@ -5829,7 +5834,7 @@
                 });
 
                 container.appendChild(grid);
-                
+                console.log(`🎓 Grouped into ${entries.length} class clusters`);
             },
 
             groupAlumniByClass() {
@@ -5863,11 +5868,11 @@
             },
 
             showDegreeClusters() {
-                
+                console.log('🎓 showDegreeClusters called!');
                 const container = this.elements.cardsContainer;
-                
+                console.log('🎓 Container:', container);
                 if (!container) {
-                    
+                    console.error('🎓 No container found!');
                     return;
                 }
                 
@@ -5876,11 +5881,11 @@
                 
                 // Add clustering class
                 container.classList.add('clustering');
-                
+                console.log('🎓 About to call groupAlumniByDegreeCategories...');
                 
                 try {
                     const degreeClusters = this.groupAlumniByDegreeCategories();
-                    
+                    console.log('🎓 Degree clusters:', degreeClusters);
                     container.innerHTML = '';
 
                     // Add hamburger navigation
@@ -5945,20 +5950,20 @@
                     // Setup hamburger menu functionality - no initial population
                     this.setupDegreeHamburgerMenu(degreeClusters);
                     
-                    
+                    console.log(`🎓 Degree clustering ready with hamburger menu`);
                 
                 } catch (error) {
-                    
+                    console.error('🎓 Error in showDegreeClusters:', error);
                     container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #e74c3c;">Error loading degree clusters</div>';
                 }
             },
 
             showIndustryClusters() {
-                
+                console.log('🏢 showIndustryClusters called!');
                 const container = this.elements.cardsContainer;
-                
+                console.log('🏢 Container:', container);
                 if (!container) {
-                    
+                    console.error('🏢 No container found!');
                     return;
                 }
                 
@@ -5967,11 +5972,11 @@
                 
                 // Add clustering class
                 container.classList.add('clustering');
-                
+                console.log('🏢 About to call groupAlumniByIndustryDomains...');
                 
                 try {
                     const industryDomains = this.groupAlumniByIndustryDomains();
-                    
+                    console.log('🏢 Industry domains:', industryDomains);
                     container.innerHTML = '';
 
                     // Add white header styling (like class clusters)
@@ -6027,20 +6032,20 @@
                     // Setup hamburger menu
                     this.setupIndustryHamburgerMenu(industryDomains);
                     
-                    
+                    console.log(`🏢 Industry clustering ready with hamburger menu`);
                 
                 } catch (error) {
-                    
+                    console.error('🏢 Error in showIndustryClusters:', error);
                     container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #e74c3c;">Error loading industry clusters</div>';
                 }
             },
 
             showCompanyClusters() {
-                
+                console.log('🏢 showCompanyClusters called!');
                 const container = this.elements.cardsContainer;
-                
+                console.log('🏢 Container:', container);
                 if (!container) {
-                    
+                    console.error('🏢 No container found!');
                     return;
                 }
                 
@@ -6049,11 +6054,11 @@
                 
                 // Add clustering class
                 container.classList.add('clustering');
-                
+                console.log('🏢 About to call groupAlumniByCompany...');
                 
                 try {
                     const companies = this.groupAlumniByCompany();
-                    
+                    console.log('🏢 Companies:', companies);
                     container.innerHTML = '';
 
                     // Add header
@@ -6097,9 +6102,9 @@
                     });
 
                     container.appendChild(grid);
-                    
+                    console.log('✅ Company clusters rendered successfully');
                 } catch (error) {
-                    
+                    console.error('🏢 Error in showCompanyClusters:', error);
                     container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #e74c3c;">Error loading company clusters</div>';
                 }
             },
@@ -6107,7 +6112,7 @@
             groupAlumniByCompany() {
                 const companies = {};
                 
-                
+                console.log('🏢 Filtered data count:', this.filteredData.length);
                 
                 this.filteredData.forEach((alumni, index) => {
                     const company = alumni.professional?.company || 'Unknown Company';
@@ -6115,7 +6120,11 @@
                     
                     if (!companies[companyName]) {
                         const openRolesUrl = alumni.professional?.company_open_roles_url || '';
-                        // Creating company entry
+                        console.log(`🏢 Creating company entry for ${companyName}:`, {
+                            logo_url: alumni.professional?.company_logo_url || '',
+                            open_roles_url: openRolesUrl,
+                            alumni_professional: alumni.professional
+                        });
                         
                         companies[companyName] = {
                             alumni: [],
@@ -6129,7 +6138,7 @@
                     companies[companyName].count++;
                 });
                 
-                
+                console.log('🏢 Grouped companies:', Object.keys(companies));
                 return companies;
             },
 
@@ -6260,10 +6269,14 @@
                 bottomSection.style.cssText = 'margin-top: auto; padding-top: 1rem;';
                 
                 // Open Roles button (if URL exists)
-                // Button debug info
+                console.log(`🔍 BUTTON DEBUG for ${companyName}:`, {
+                    open_roles_url: data.open_roles_url,
+                    has_url: !!(data.open_roles_url && data.open_roles_url.trim()),
+                    company_data: data
+                });
                 
                 if (data.open_roles_url && data.open_roles_url.trim()) {
-                    
+                    console.log(`✅ Creating Open Roles button for ${companyName}`);
                     const openRolesBtn = document.createElement('button');
                     openRolesBtn.innerHTML = '💼 Open Roles';
                     openRolesBtn.style.cssText = `
@@ -6330,7 +6343,7 @@
             },
 
             showCompanyAlumniPopup(companyName, alumni) {
-                
+                console.log(`🏢 Showing alumni for company: ${companyName}`);
                 
                 // Store the company alumni FIRST - before any modal operations
                 this.currentCompanyAlumni = alumni;
@@ -6380,8 +6393,8 @@
             },
 
             initializeCompanyNetworkVisualization(companyAlumni, alumni) {
-                
-                
+                console.log('🏢 Initializing company network visualization');
+                console.log('🏢 Alumni count:', alumni.length);
                 
                 // Find the connected alumni cards container - try multiple selectors
                 let container = document.getElementById('connectedAlumniCards');
@@ -6393,18 +6406,18 @@
                 }
                 
                 if (!container) {
-                    
+                    console.error('❌ Could not find alumni cards container');
                     return;
                 }
                 
-                
+                console.log('✅ Found container:', container.className);
                 
                 // Clear any existing content
                 container.innerHTML = '';
                 
                 // Create alumni cards using the EXACT same method as normal networking popup
                 alumni.forEach((alumniData, index) => {
-                    
+                    console.log(`🏢 Creating desktop card ${index + 1}/${alumni.length} for:`, alumniData.personal?.name);
                     
                     // Use the EXACT same createNetworkAlumniCard method as normal networking popup
                     const card = this.createNetworkAlumniCard(alumniData);
@@ -6412,7 +6425,7 @@
                     // Override the click handler to properly handle company -> alumni transition
                     const originalClickHandler = card.onclick;
                     card.onclick = () => {
-                        
+                        console.log(`🔥 DESKTOP: Clicked on ${alumniData.personal?.name}`);
                         
                         // Clear company context and show alumni connections
                         this.currentCompanyAlumni = undefined;
@@ -6426,7 +6439,7 @@
                     container.appendChild(card);
                 });
                 
-                
+                console.log(`✅ Created ${alumni.length} alumni cards in company popup`);
             },
 
             generateCompanyNetworkModalContent(companyData, alumni) {
@@ -6585,11 +6598,11 @@
                     'Social Studies': { alumni: [], subcategories: {} }
                 };
                 
-                
+                console.log('🎓 Filtered data count:', this.filteredData.length);
                 
                 // If no data, create test data with degrees
                 if (this.filteredData.length === 0) {
-                    
+                    console.warn('🎓 No filtered data! Creating test data...');
                     this.filteredData = [
                         { personal: { name: 'John Doe', degree: 'Computer Science' }, summit_2025: { attending: true } },
                         { personal: { name: 'Jane Smith', degree: 'Business Administration' }, summit_2025: { attending: false } },
@@ -6604,14 +6617,14 @@
                     
                     // Debug first few entries
                     if (index < 3) {
-                        
+                        console.log(`🎓 Alumni ${index}:`, alumni.personal?.name, 'Degree:', degreeName);
                     }
                     
                     // Categorize degree into one of the 4 main categories
                     const category = this.categorizeDegreeName(degreeName);
                     
                     if (index < 3) {
-                        
+                        console.log(`🎓 Categorized as:`, category);
                     }
                     
                     // Add to category's alumni list
@@ -6737,7 +6750,7 @@
                     
                     // Debug log for first few entries
                     if (Object.keys(clusters).length < 3) {
-                        
+                        console.log(`🎓 Debug: ${alumni.personal?.name || 'No name'} -> Degree: "${degree}"`);
                     }
                     
                     if (!clusters[degreeName]) {
@@ -7053,7 +7066,7 @@
 
             // Network Visualization Methods
             initializeNetworkVisualization(selectedAlumni) {
-                
+                console.log('🌐 Initializing network for:', selectedAlumni.personal?.name);
                 this.networkData = this.generateNetworkData();
                 // Show all connections initially
                 setTimeout(() => {
@@ -7075,7 +7088,7 @@
                 );
                 
                 if (!selectedNode) {
-                    
+                    console.error('Selected alumni not found in network data');
                     return;
                 }
 
@@ -7295,7 +7308,7 @@
                 // Add click handler to navigate to this alumni's connections
                 card.addEventListener('click', () => {
                     if (fullAlumniData) {
-                        
+                        console.log(`🎯 Switching network focus to: ${fullAlumniData.personal?.name}`);
                         
                         // Update the left panel with this alumni's details
                         this.updateSelectedAlumniCard(fullAlumniData);
@@ -7390,7 +7403,7 @@
             },
 
             generateNetworkData() {
-                
+                console.log('🔄 Generating network data from alumni...');
                 const nodes = this.alumniData.map((alumni, index) => ({
                     id: `alumni_${index}`,
                     name: alumni.personal?.name || 'Anonymous',
@@ -7448,7 +7461,7 @@
                     node.centrality = node.connections;
                 });
 
-                
+                console.log(`✅ Generated ${nodes.length} nodes and ${links.length} links`);
                 return { nodes, links };
             },
 
@@ -7462,7 +7475,7 @@
                 );
                 
                 if (!selectedNode) {
-                    
+                    console.error('Selected alumni not found in network data');
                     return;
                 }
 
@@ -7482,7 +7495,7 @@
                 const filteredNodes = this.networkData.nodes.filter(n => connectedNodeIds.has(n.id));
                 const filteredLinks = relevantLinks;
 
-                
+                console.log(`🎯 Showing ${filteredNodes.length} nodes and ${filteredLinks.length} connections for ${selectedNode.name}`);
 
                 container.innerHTML = '';
                 const containerRect = container.getBoundingClientRect();
@@ -7495,18 +7508,18 @@
                 // Create mini card layout
                 const layoutData = this.createMiniCardLayout(filteredNodes, selectedNode, width, height);
                 
-                
-                
+                console.log('🎯 Layout data:', layoutData);
+                console.log('🎯 Filtered nodes:', filteredNodes.length);
                 
                 // Clear the right panel and create HTML-based mini cards instead
                 const rightPanel = document.querySelector('.network-right-panel');
-                
+                console.log('🎯 Right panel found:', !!rightPanel);
                 
                 if (rightPanel) {
                     rightPanel.innerHTML = '';
                     this.renderMiniCards(layoutData, selectedNode, rightPanel);
                 } else {
-                    
+                    console.error('Network right panel not found');
                 }
 
                 // Store network elements for cleanup
@@ -7723,24 +7736,29 @@
                     }
                 ];
 
-                // Mini card layout created
+                console.log(`🎯 Created mini card layout:`, {
+                    degree: clusters.same_degree.length,
+                    class: clusters.same_class.length,
+                    industry: clusters.same_industry.length,
+                    company: clusters.same_company.length
+                });
 
                 return { columns, selectedNode, columnConfig };
             },
 
             renderMiniCards(layoutData, selectedNode, container) {
-                
+                console.log('🎯 renderMiniCards called with:', { layoutData, selectedNode, container });
                 
                 const { columns, columnConfig } = layoutData;
                 
                 if (!container) {
-                    
+                    console.error('Container not provided to renderMiniCards');
                     return;
                 }
                 
-                
+                console.log('🎯 Columns to render:', columns.length);
                 columns.forEach((col, i) => {
-                    
+                    console.log(`🎯 Column ${i}: ${col.title} - ${col.nodes.length} nodes`);
                 });
                 
                 // Create main container with 3 columns
@@ -7924,7 +7942,7 @@
 
 
             handleNetworkNodeClick(event, nodeData) {
-                
+                console.log(`🎯 Clicked on network node: ${nodeData.name}`);
                 
                 // Find the full alumni data for this node
                 const fullAlumniData = this.alumniData.find(alumni => 
@@ -7933,12 +7951,12 @@
                 );
                 
                 if (!fullAlumniData) {
-                    
-                    
+                    console.error('Full alumni data not found for:', nodeData.name);
+                    console.log('Available alumni names:', this.alumniData.slice(0, 5).map(a => a.personal?.name || a.name));
                     return;
                 }
                 
-                
+                console.log(`🎯 Found full alumni data, regenerating network for: ${fullAlumniData.personal?.name || fullAlumniData.name}`);
                 
                 // Reset all active filters when navigating to a new alumni
                 this.resetNetworkFilters();
@@ -7956,7 +7974,7 @@
             },
 
             resetNetworkFilters() {
-                
+                console.log('🔄 Resetting network filters and clicked states');
                 
                 // Reset all filter buttons to inactive state
                 const filterButtons = document.querySelectorAll('.filter-btn');
@@ -7977,13 +7995,13 @@
                 // Clear any active filter states
                 this.activeNetworkFilter = null;
                 
-                
+                console.log('✅ Network filters and clicked states reset');
             },
 
             updateSelectedAlumniCard(alumni) {
                 // Skip update if this is a company popup - keep the company data
                 if (this.currentCompanyAlumni) {
-                    
+                    console.log('🏢 Skipping alumni update - keeping company data in left panel');
                     return;
                 }
                 
@@ -8159,7 +8177,7 @@
 
         // Initialize the enhanced app when DOM is ready
         document.addEventListener('DOMContentLoaded', () => {
-            
+            console.log('📄 DOM loaded, starting Enhanced Alumni App...');
             
             // Immediately scroll to top on page load
             window.scrollTo(0, 0);
@@ -8180,13 +8198,13 @@
                         window.alumniApp.applyFannedDeckPositioning(container, cardCount);
                     }
                 });
-                
+                console.log('🔄 Fanned deck positions recalculated for new screen size');
             }, 250);
         });
 
         // Fallback initialization if DOM is already loaded
         if (document.readyState === 'complete' || document.readyState === 'interactive') {
-            
+            console.log('📄 DOM already loaded, starting Enhanced Alumni App immediately...');
             
             // Immediately scroll to top on page load
             window.scrollTo(0, 0);
@@ -8199,11 +8217,11 @@
     <script>
         // Function to display company alumni cards with mobile styling - GLOBAL SCOPE
         window.displayMobileCompanyNetworkCards = function(filters = []) {
-            
+            console.log('🏢 Displaying mobile company network cards');
             
             const cardsContainer = document.getElementById('mobileConnectedAlumniCards');
             if (!cardsContainer) {
-                
+                console.error('❌ Could not find mobileConnectedAlumniCards container');
                 return;
             }
             
@@ -8216,7 +8234,7 @@
                 return;
             }
             
-            
+            console.log(`🏢 Creating ${companyAlumni.length} mobile alumni cards`);
             
             // Create alumni cards with EXACT mobile styling
             companyAlumni.forEach((alumniData, index) => {
@@ -8279,12 +8297,12 @@
                 
                 // Add click handler (EXACT COPY from working desktop mini cards line 7282)
                 card.addEventListener('click', () => {
-                    
+                    console.log(`🏢 Company popup: Clicking alumni ${personal.name} - CLEARING COMPANY CONTEXT`);
                     
                     // CLEAR the company context so we show alumni connections, not company
                     if (window.alumniApp) {
                         window.alumniApp.currentCompanyAlumni = undefined;
-                        
+                        console.log(`🏢 Cleared company context - now showing ${personal.name}'s connections`);
                         
                         if (window.alumniApp.handleNetworkNodeClick) {
                             window.alumniApp.handleNetworkNodeClick(null, alumniData);
@@ -8295,7 +8313,7 @@
                 cardsContainer.appendChild(card);
             });
             
-            
+            console.log(`✅ Created ${companyAlumni.length} mobile company alumni cards`);
         };
     </script>
 
@@ -8303,7 +8321,7 @@
     <script>
         // MOBILE POPUP LAYOUT HANDLER
         function setupMobileLayout() {
-            
+            console.log(`📱 Screen width: ${window.innerWidth}px - ${window.innerWidth <= 768 ? 'MOBILE' : 'DESKTOP'} mode`);
             if (window.innerWidth <= 768) {
                 // Watch for modal opens
                 const observer = new MutationObserver(function(mutations) {
@@ -8316,7 +8334,7 @@
                             const isCompanyPopup = window.alumniApp?.currentCompanyAlumni !== undefined;
                             
                             if (isCompanyPopup) {
-                                
+                                console.log('🏢 Company popup detected - using MOBILE layout like other clusters');
                                 // For company popups, use the SAME mobile system as alumni popups
                                 modal.style.width = '95vw';
                                 modal.style.height = '90vh';
@@ -8335,7 +8353,7 @@
                                 // Hide the original larger content, only show our mini version
                                 const children = modalBody.children;
                                 
-                                
+                                console.log('📱 Mobile: Hiding content for company popup');
                                 for (let i = 0; i < children.length; i++) {
                                     const child = children[i];
                                     // Hide everything except our mini network modal
@@ -8352,7 +8370,7 @@
                                 return; // Skip all other mobile processing for companies
                             }
                             
-                            
+                            console.log('📱 Applying mobile layout to modal');
                             // Make modal full screen on mobile
                             modal.style.width = '95vw';
                             modal.style.height = '90vh';
@@ -8391,7 +8409,7 @@
                             // Hide the original larger content, only show our mini version
                             const children = modalBody.children;
                             
-                            
+                            console.log('📱 Mobile: Hiding content for alumni popup');
                             for (let i = 0; i < children.length; i++) {
                                 const child = children[i];
                                 // Hide everything except our mini network modal
@@ -8415,13 +8433,13 @@
                     attributeFilter: ['class']
                 });
             } else {
-                
+                console.log('🖥️ Desktop mode - using standard modal layout');
             }
         }
         
         // Create MOBILE COMPANY VERSION - exactly like alumni but with company data
         function addMobileCompanySuggestionCards(modalBody) {
-            
+            console.log('🏢 Creating mobile company popup layout');
             
             // Check if we already added the mini desktop version
             if (modalBody.querySelector('.mobile-network-modal')) return;
@@ -8690,7 +8708,7 @@
             
             // Generate network data with connection strengths (like desktop)
             function generateMobileNetworkData() {
-                
+                console.log('🔄 Generating mobile network data...');
                 const nodes = allAlumni.map((alumni, index) => ({
                     id: `alumni_${index}`,
                     name: alumni.personal?.name || 'Anonymous',
@@ -8750,7 +8768,7 @@
                     node.centrality = node.connections;
                 });
 
-                
+                console.log(`✅ Generated ${nodes.length} nodes and ${links.length} links for mobile`);
                 return { nodes, links };
             }
             
@@ -8822,7 +8840,7 @@
                 );
                 
                 if (!selectedNode) {
-                    
+                    console.error('Selected alumni not found in network data');
                     cardsContainer.innerHTML = '<div style="color: white; text-align: center; padding: 1rem; font-size: 0.7rem;">Alumni not found in network</div>';
                     return;
                 }
