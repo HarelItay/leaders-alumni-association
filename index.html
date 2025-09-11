@@ -3255,14 +3255,26 @@
                     
                     this.alumniData = data;
                     this.filteredData = [...this.alumniData];
-                    this.updateLoadingProgress(70);
+                    this.updateLoadingProgress(50);
                     console.log(`✅ Loaded ${this.alumniData.length} alumni records`);
+                    
+                    // Populate photos asynchronously
+                    console.log('🖼️ Step 1.5: Populating alumni photos...');
+                    this.updateLoadingProgress(60);
+                    await this.populateAlumniPhotos(this.alumniData);
+                    this.updateLoadingProgress(70);
+                    console.log('✅ Photos populated successfully');
                 } catch (error) {
                     console.error('💥 Failed to load Google Sheets data:', error);
                     console.log('📝 Using enhanced fallback data - showing sample alumni');
                     this.alumniData = await this.createEnhancedFallbackData();
                     this.filteredData = [...this.alumniData];
                     console.log(`✅ Created ${this.alumniData.length} fallback alumni records`);
+                    
+                    // Populate photos for fallback data too
+                    console.log('🖼️ Populating fallback alumni photos...');
+                    await this.populateAlumniPhotos(this.alumniData);
+                    console.log('✅ Fallback photos populated successfully');
                     
                     // Show user-friendly error message
                     console.log('⚠️ Unable to load live data. Showing sample alumni.');
@@ -3527,7 +3539,7 @@
                         id: row.id || `alumni_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
                         personal: {
                             name: fullName || 'Anonymous',
-                            photo: this.getLocalProfileImage(fullName) || this.getRandomEmoji(),
+                            photo: null, // Will be populated asynchronously
                             graduation_year: parseInt(row.graduation_year) || new Date().getFullYear(),
                             degree: row.degree || row.Degree || '',
                             location: {
@@ -3569,7 +3581,7 @@
                         id: csvRow.id || `alumni_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
                         personal: {
                             name: csvRow.name || 'Anonymous',
-                            photo: this.getLocalProfileImage(csvRow.name) || this.getRandomEmoji(),
+                            photo: null, // Will be populated asynchronously
                             graduation_year: parseInt(csvRow.class) || new Date().getFullYear(), // Fixed: use 'class' field
                             degree: csvRow.degree || '', // Already correct
                             location: {
@@ -3602,7 +3614,7 @@
                 }
             }
 
-            getLocalProfileImage(fullName) {
+            async getLocalProfileImage(fullName) {
                 if (!fullName || fullName.trim() === '' || fullName === 'Anonymous') {
                     return null;
                 }
@@ -3610,44 +3622,136 @@
                 // Clean the name for filename matching
                 const cleanName = fullName.trim();
                 
-                // List of available profile images (based on the files in /images/profiles/)
-                const availableImages = [
-                    'Ayal Alster Asia.png',
-                    'Carmel Ariel.png', 
-                    'Elchanan Henshke.png',
-                    'Idan Mizrahi.png',
-                    'Nashwa Gnamy.png',
-                    'Shai Turjeman.png',
-                    'Shani Dabull.jpeg',
-                    'Shiri Rosenman.png',
-                    'Yael Agur Orgal.png',
-                    'Yonatan Ben Gur.png',
-                    'Yotam Naor.png',
-                    'Yuval Zohar.png'
-                ];
-                
-                // Try to find exact match first
-                let matchedImage = availableImages.find(img => {
-                    const imgName = img.replace(/\.(png|jpeg|jpg)$/i, '');
-                    return imgName === cleanName;
-                });
-                
-                // If no exact match, try partial matching
-                if (!matchedImage) {
-                    matchedImage = availableImages.find(img => {
+                try {
+                    // Dynamically fetch the list of available profile images
+                    const availableImages = await this.getAvailableProfileImages();
+                    
+                    if (!availableImages || availableImages.length === 0) {
+                        console.log(`❌ No profile images found in directory`);
+                        return null;
+                    }
+                    
+                    // Try to find exact match first
+                    let matchedImage = availableImages.find(img => {
                         const imgName = img.replace(/\.(png|jpeg|jpg)$/i, '');
-                        return imgName.toLowerCase().includes(cleanName.toLowerCase()) || 
-                               cleanName.toLowerCase().includes(imgName.toLowerCase());
+                        return imgName === cleanName;
                     });
-                }
-                
-                if (matchedImage) {
-                    console.log(`✅ Found local image for ${cleanName}: ${matchedImage}`);
-                    return `images/profiles/${matchedImage}`;
-                } else {
-                    console.log(`❌ No local image found for: ${cleanName}`);
+                    
+                    // If no exact match, try partial matching
+                    if (!matchedImage) {
+                        matchedImage = availableImages.find(img => {
+                            const imgName = img.replace(/\.(png|jpeg|jpg)$/i, '');
+                            return imgName.toLowerCase().includes(cleanName.toLowerCase()) || 
+                                   cleanName.toLowerCase().includes(imgName.toLowerCase());
+                        });
+                    }
+                    
+                    if (matchedImage) {
+                        console.log(`✅ Found local image for ${cleanName}: ${matchedImage}`);
+                        return `images/profiles/${matchedImage}`;
+                    } else {
+                        console.log(`❌ No local image found for: ${cleanName}`);
+                        return null;
+                    }
+                } catch (error) {
+                    console.error('Error getting local profile image:', error);
                     return null;
                 }
+            }
+
+            async getAvailableProfileImages() {
+                try {
+                    // Cache the images list to avoid repeated API calls
+                    if (this.cachedProfileImages) {
+                        return this.cachedProfileImages;
+                    }
+
+                    // Try to fetch the directory listing from the GitHub API
+                    const response = await fetch('https://api.github.com/repos/itayharel/alumni-networking-2025/contents/images/profiles');
+                    
+                    if (!response.ok) {
+                        console.warn('GitHub API failed, falling back to known images');
+                        return this.getFallbackImageList();
+                    }
+                    
+                    const files = await response.json();
+                    const imageFiles = files
+                        .filter(file => file.type === 'file' && /\.(png|jpeg|jpg)$/i.test(file.name))
+                        .map(file => file.name);
+                    
+                    console.log(`📁 Found ${imageFiles.length} profile images via GitHub API`);
+                    
+                    // Cache the result
+                    this.cachedProfileImages = imageFiles;
+                    return imageFiles;
+                    
+                } catch (error) {
+                    console.warn('Error fetching profile images from GitHub API:', error);
+                    return this.getFallbackImageList();
+                }
+            }
+
+            getFallbackImageList() {
+                // Fallback list in case GitHub API is not available
+                return [
+                    'Adi Ben Nun.jpeg', 'Adi Nechemia.jpeg', 'Amir Gordon.jpeg', 'Amir Livneh.jpeg',
+                    'Amir Sharabi.jpeg', 'Amit Hazak.jpeg', 'Amit Levy.jpeg', 'Amit Parpara.jpeg',
+                    'Amit Wagner.jpeg', 'Asras Damalash.jpeg', 'Avia Haim.jpeg', 'Avital Drabkin.jpeg',
+                    'Avital Yariv.jpeg', 'Aviv Ackerman.jpeg', 'Ayal Alster Asia.png', 'Ayelet Edelman.jpeg',
+                    'Bar Ben David.jpeg', 'Barak Dvir.jpeg', 'Ben Haimoff.jpeg', 'Ben Salomon.jpeg',
+                    'Bnaya Avramowitz.jpeg', 'Carmel Ariel.png', 'Carolina Fain.jpeg', 'Dan Osovsky.jpeg',
+                    'Dana Shifrin.jpeg', 'Danielle Bergner.jpeg', 'Dor Suriks.jpeg', 'Dor Tahan.jpeg',
+                    'Doron Ortner.jpeg', 'Eden Azran.jpeg', 'Eden Gabay.jpeg', 'Eden Kim Admon.jpeg',
+                    'Eden Or.jpeg', 'Eden Yavin.jpeg', 'Elad Turgeman.jpeg', 'Elchanan Henshke.png',
+                    'Eli Friedrich.jpeg', 'Elie Ohayon.jpeg', 'Elor Siso.jpeg', 'Eran Ringer.jpeg',
+                    'Evyatar Barkai.jpeg', 'Eyal Tal.jpeg', 'Eylon Cohen.jpeg', 'Gal Zalmanovitsh.jpeg',
+                    'Gaya Heimann.jpeg', 'Gil Ari Agmon.jpeg', 'Gil Dahan.jpeg', 'Gil Gybuch.jpeg',
+                    'Hadar Ben Simon.jpeg', 'Harduff Winkler.jpeg', 'Hely Hayon.jpeg', 'Hen Yona.jpeg',
+                    'Hila Gonen.jpeg', 'Idan Cohen.jpeg', 'Idan Marshal.jpeg', 'Idan Mizrahi.png',
+                    'Inbar Eliyahu.jpeg', 'Inbar Yakobi.jpeg', 'Itamar Bashari.jpeg', 'Itay Harel.jpeg',
+                    'Keren Kazas.jpeg', 'Koren Maor.jpeg', 'Lee Ben Gigi.jpeg', 'Liad Gabay.jpg',
+                    'Lihi Dangoor.jpeg', 'Lily Sides.jpeg', 'Lior Sharon.jpeg', 'Liran Shtrauchler.jpeg',
+                    'Lital Cartiel.jpeg', 'Matan Shaaya.jpeg', 'May Rosenzweig.jpeg', 'Maya Tzur.jpeg',
+                    'Mazal Mahari.jpeg', 'Meron Harilker.jpeg', 'Michael Schuldenfrei.jpeg', 'Michal Finstein.jpeg',
+                    'Michal Levertov.jpeg', 'Mike Lipliansky.jpeg', 'Mohamad Usman.jpeg', 'Mor Sela.jpeg',
+                    'Nadav Bachar.jpeg', 'Naor Piterman.jpeg', 'Nashwa Gnamy.png', 'Natali Levin.jpeg',
+                    'Neriya Gabay.jpeg', 'Netanel Vardi.jpeg', 'Netta Meiri.jpeg', 'Nicole Kaplan.jpeg',
+                    'Nicole Kheifets Greenstein.jpeg', 'Nimrod Varsano.jpeg', 'Nir Cafri.jpeg', 'Nitzan Etzion.jpeg',
+                    'Noa Argamani.jpeg', 'Noa Eisenberg.jpeg', 'Noa Shatz.jpeg', 'Noam Avital.jpeg',
+                    'Noemie Fratty.jpeg', 'Noga Shkedy.jpeg', 'Noy Lifshitz.jpeg', 'Oded Adler.jpeg',
+                    'Ofek Eliasko.jpeg', 'Ofek Ronan.jpeg', 'Ofer Bar oz.jpeg', 'Ofir Naaman Peri.jpeg',
+                    'Ofir Tamir.jpeg', 'Ohad Yeffet.jpeg', 'Omri Dahan.jpeg', 'Omri Sgan-cohen.jpeg',
+                    'Or Gada.jpg', 'Ori Ashkenazi.jpeg', 'Raghad Zeidan.jpeg', 'Ran Cohen.jpeg',
+                    'Rinat Rosenblum.jpeg', 'Ronnie Cohen.jpeg', 'Rony Kruchakov.jpeg', 'Rotem Duek.jpeg',
+                    'Shai Turjeman.png', 'Shaked Shushan.jpeg', 'Shalev Haimovich.jpeg', 'Shani Dabull.jpeg',
+                    'Sharel Bachar.jpeg', 'Shir Waizman.jpeg', 'Shira Mizrahi.jpeg', 'Shirelle Drori.jpeg',
+                    'Shiri Rosenman.png', 'Tal Benlulu.jpeg', 'Tal Klein.jpeg', 'Tamar Schejter-Cohen.jpeg',
+                    'Tamir Cohen.jpeg', 'Tamir Elazar.png', 'Tamir Sayada.jpeg', 'Tzvi-Bar M. Schumert.jpeg',
+                    'Vladislav Sergienko.jpeg', 'Yael Agur Orgal.png', 'Yagel Levi.jpeg', 'Yair Keinan.jpeg',
+                    'Yarden Kroitoru.jpeg', 'Yasmin Hasan.jpeg', 'Yativ Yehiel.jpeg', 'Yehonatan Dahan.jpeg',
+                    'Yehonatan Tripto.jpeg', 'Yochai Brukner.jpeg', 'Yonatan Ben Gur.png', 'Yoni Kedem.jpeg',
+                    'Yotam Lifschytz.jpeg', 'Yotam Naor.png', 'Yuosef Jumhur.jpeg', 'Yuval Anavi.jpeg',
+                    'Yuval Zohar.png'
+                ];
+            }
+
+            async populateAlumniPhotos(alumniData) {
+                console.log(`🔄 Starting to populate photos for ${alumniData.length} alumni...`);
+                
+                const promises = alumniData.map(async (alumni) => {
+                    const fullName = alumni.personal.name;
+                    if (!fullName || fullName === 'Anonymous') {
+                        alumni.personal.photo = this.getRandomEmoji();
+                        return;
+                    }
+                    
+                    const localImageUrl = await this.getLocalProfileImage(fullName);
+                    alumni.personal.photo = localImageUrl || this.getRandomEmoji();
+                });
+                
+                await Promise.all(promises);
+                console.log(`✅ Completed populating photos for all alumni`);
+                return alumniData;
             }
 
             getRandomEmoji() {
@@ -3708,15 +3812,9 @@
                 
                 console.log(`🔍 Photo empty check for "${alumniName}": ${isEmpty} (photo: "${photo}")`);
                 
-                // If no valid photo, try to find local profile image
+                // If no valid photo, show placeholder (photos are populated asynchronously during data loading)
                 if (isEmpty) {
-                    const localImageUrl = this.getLocalProfileImage(alumniName);
-                    console.log(`🔍 Local image URL for "${alumniName}": ${localImageUrl}`);
-                    if (localImageUrl) {
-                        console.log(`✅ Using local image for "${alumniName}": ${localImageUrl}`);
-                        return `<img src="${localImageUrl}" alt="${alumniName} Profile" onload="this.style.opacity=1; console.log('✅ Local image loaded: ${localImageUrl}')" onerror="console.log('❌ Local image failed: ${localImageUrl}'); this.outerHTML='<div class=\\'photo-placeholder\\'>📷</div>'" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; opacity: 0; transition: opacity 0.3s ease;">`;
-                    }
-                    console.log(`📷 No local image found for "${alumniName}", showing placeholder`);
+                    console.log(`📷 No photo available for "${alumniName}", showing placeholder`);
                     return `<div class="photo-placeholder">📷</div>`;
                 }
                 
@@ -3754,14 +3852,8 @@
                     return `<img src="${processedPhoto}${separator}cb=${Date.now()}" alt="Profile Photo" onload="console.log('✅ Pattern-matched image loaded for ${alumniName}:', this.src); this.style.opacity=1" onerror="console.log('❌ Pattern-matched image failed for ${alumniName}:', this.src); this.outerHTML='<div class=\\'photo-placeholder\\' title=\\'Image failed to load\\'>📷</div>'" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; opacity: 0; transition: opacity 0.3s ease;">`;
                 }
                 
-                // Default placeholder for anything else - but try local image first
-                console.log(`⚠️ Photo "${photo}" for "${alumniName}" is not a valid URL, trying local image as fallback`);
-                const localImageUrl = this.getLocalProfileImage(alumniName);
-                if (localImageUrl) {
-                    console.log(`✅ Using local image as final fallback for "${alumniName}": ${localImageUrl}`);
-                    return `<img src="${localImageUrl}" alt="${alumniName} Profile" onload="this.style.opacity=1; console.log('✅ Local fallback image loaded: ${localImageUrl}')" onerror="console.log('❌ Local fallback image failed: ${localImageUrl}'); this.outerHTML='<div class=\\'photo-placeholder\\'>📷</div>'" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; opacity: 0; transition: opacity 0.3s ease;">`;
-                }
-                console.log(`📷 Final fallback: showing placeholder for "${alumniName}"`);
+                // Default placeholder for anything else (photos are populated asynchronously during data loading)
+                console.log(`⚠️ Photo "${photo}" for "${alumniName}" is not a valid URL, showing placeholder`);
                 return `<div class="photo-placeholder">📷</div>`;
             }
 
