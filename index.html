@@ -3621,63 +3621,41 @@
                 
                 // Clean the name for filename matching
                 const cleanName = fullName.trim();
+                console.log(`🔍 Trying to load image for: "${cleanName}"`);
                 
-                try {
-                    // Dynamically fetch the list of available profile images
-                    const availableImages = await this.getAvailableProfileImages();
+                // Try different file extensions and formats
+                const possibleFormats = [
+                    `${cleanName}.jpeg`,
+                    `${cleanName}.jpg`, 
+                    `${cleanName}.png`
+                ];
+                
+                for (const filename of possibleFormats) {
+                    const imagePath = `images/profiles/${filename}`;
+                    console.log(`  🔍 Trying: ${imagePath}`);
                     
-                    if (!availableImages || availableImages.length === 0) {
-                        console.log(`❌ No profile images found in directory`);
-                        return null;
-                    }
-                    
-                    console.log(`🔍 Looking for image for: "${cleanName}"`);
-                    console.log(`📁 Available images (first 10): ${availableImages.slice(0, 10).join(', ')}`);
-                    
-                    // Try to find exact match first
-                    let matchedImage = availableImages.find(img => {
-                        const imgName = img.replace(/\.(png|jpeg|jpg)$/i, '');
-                        const isExactMatch = imgName === cleanName;
-                        if (isExactMatch) {
-                            console.log(`  ✅ Exact match: "${imgName}" === "${cleanName}"`);
+                    try {
+                        // Try to load the image to see if it exists
+                        const response = await fetch(imagePath, { method: 'HEAD' });
+                        if (response.ok) {
+                            console.log(`  ✅ Found image: ${imagePath}`);
+                            return imagePath;
+                        } else {
+                            console.log(`  ❌ Not found: ${imagePath} (${response.status})`);
                         }
-                        return isExactMatch;
-                    });
-                    
-                    // If no exact match, try partial matching
-                    if (!matchedImage) {
-                        console.log(`  🔄 No exact match, trying partial matching...`);
-                        matchedImage = availableImages.find(img => {
-                            const imgName = img.replace(/\.(png|jpeg|jpg)$/i, '');
-                            const partialMatch = imgName.toLowerCase().includes(cleanName.toLowerCase()) || 
-                                               cleanName.toLowerCase().includes(imgName.toLowerCase());
-                            if (partialMatch) {
-                                console.log(`  ✅ Partial match: "${imgName}" <-> "${cleanName}"`);
-                            }
-                            return partialMatch;
-                        });
+                    } catch (error) {
+                        console.log(`  ❌ Error loading: ${imagePath}`, error);
                     }
-                    
-                    if (matchedImage) {
-                        console.log(`✅ Found local image for "${cleanName}": ${matchedImage}`);
-                        return `images/profiles/${matchedImage}`;
-                    } else {
-                        console.log(`❌ No local image found for: "${cleanName}"`);
-                        // Show first 5 available images for comparison
-                        console.log(`  Available images (first 5): ${availableImages.slice(0, 5).join(', ')}`);
-                        return null;
-                    }
-                } catch (error) {
-                    console.error('Error getting local profile image:', error);
-                    return null;
                 }
+                
+                console.log(`❌ No image found for "${cleanName}"`);
+                return null;
             }
 
             async getAvailableProfileImages() {
-                // For now, return the complete fallback list since GitHub API has CORS restrictions
-                // This includes all 137 known images
-                console.log('📁 Using complete image list (137 images)');
-                return this.getFallbackImageList();
+                // Return empty array - we'll try to load images directly instead of pre-listing them
+                console.log('📁 Skipping image list - will try direct loading');
+                return [];
             }
 
             getFallbackImageList() {
