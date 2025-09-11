@@ -3892,53 +3892,6 @@
                 return '';
             }
 
-            getLocalProfileImage(alumniName) {
-                console.log(`🔍 getLocalProfileImage called with: "${alumniName}"`);
-                if (!alumniName || alumniName.trim() === '') {
-                    console.log(`❌ Empty alumni name provided`);
-                    return null;
-                }
-                
-                // Exact mapping for uploaded profile images
-                const profileImageMap = {
-                    'Shai Turjeman': './images/profiles/Shai Turjeman.png',
-                    'Shani Dabull': './images/profiles/Shani Dabull.jpeg',
-                    'Shiri Rosenman': './images/profiles/Shiri Rosenman.png',
-                    'Yael Agur Orgal': './images/profiles/Yael Agur Orgal.png',
-                    'Yonatan Ben Gur': './images/profiles/Yonatan Ben Gur.png',
-                    'Yotam Naor': './images/profiles/Yotam Naor.png',
-                    'Yuval Zohar': './images/profiles/Yuval Zohar.png',
-                    'Ayal Alster Asia': './images/profiles/Ayal Alster Asia.png',
-                    'Carmel Ariel': './images/profiles/Carmel Ariel.png',
-                    'Elchanan Henshke': './images/profiles/Elchanan Henshke.png',
-                    'Idan Mizrahi': './images/profiles/Idan Mizrahi.png',
-                    'Nashwa Gnamy': './images/profiles/Nashwa Gnamy.png'
-                };
-                
-                console.log(`🗂️ Available profiles: ${Object.keys(profileImageMap).join(', ')}`);
-                
-                // Try exact name match first
-                const trimmedName = alumniName.trim();
-                console.log(`🔍 Trying exact match for: "${trimmedName}"`);
-                const exactMatch = profileImageMap[trimmedName];
-                if (exactMatch) {
-                    console.log(`✅ Exact match found: "${trimmedName}" → ${exactMatch}`);
-                    return exactMatch;
-                }
-                
-                // Try case-insensitive match
-                const lowerName = trimmedName.toLowerCase();
-                console.log(`🔍 Trying case-insensitive match for: "${lowerName}"`);
-                for (const [name, path] of Object.entries(profileImageMap)) {
-                    if (name.toLowerCase() === lowerName) {
-                        console.log(`✅ Case-insensitive match found: "${name}" → ${path}`);
-                        return path;
-                    }
-                }
-                
-                console.log(`❌ No local image found for: "${alumniName}"`);
-                return null; // No local image found
-            }
 
             async createEnhancedFallbackData() {
                 // If CSV fails, try to load it directly as fallback
