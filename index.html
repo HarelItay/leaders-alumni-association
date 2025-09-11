@@ -3660,35 +3660,10 @@
             }
 
             async getAvailableProfileImages() {
-                try {
-                    // Cache the images list to avoid repeated API calls
-                    if (this.cachedProfileImages) {
-                        return this.cachedProfileImages;
-                    }
-
-                    // Try to fetch the directory listing from the GitHub API
-                    const response = await fetch('https://api.github.com/repos/itayharel/alumni-networking-2025/contents/images/profiles');
-                    
-                    if (!response.ok) {
-                        console.warn('GitHub API failed, falling back to known images');
-                        return this.getFallbackImageList();
-                    }
-                    
-                    const files = await response.json();
-                    const imageFiles = files
-                        .filter(file => file.type === 'file' && /\.(png|jpeg|jpg)$/i.test(file.name))
-                        .map(file => file.name);
-                    
-                    console.log(`📁 Found ${imageFiles.length} profile images via GitHub API`);
-                    
-                    // Cache the result
-                    this.cachedProfileImages = imageFiles;
-                    return imageFiles;
-                    
-                } catch (error) {
-                    console.warn('Error fetching profile images from GitHub API:', error);
-                    return this.getFallbackImageList();
-                }
+                // For now, return the complete fallback list since GitHub API has CORS restrictions
+                // This includes all 137 known images
+                console.log('📁 Using complete image list (137 images)');
+                return this.getFallbackImageList();
             }
 
             getFallbackImageList() {
