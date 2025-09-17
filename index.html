@@ -1318,16 +1318,14 @@
                 margin-right: 0 !important;
             }
             
-            /* Ensure ALL alumni cards display 2 in a row on mobile */
-            .cards-container,
-            .cluster-expansion-grid {
+            /* MOBILE ONLY - Ensure alumni cards display 2 in a row */
+            .cards-container {
                 grid-template-columns: repeat(2, 1fr) !important;
                 gap: 0.75rem !important;
                 padding: 0.5rem !important;
             }
             
-            .cards-container .alumni-card,
-            .cluster-expansion-grid .alumni-card {
+            .cards-container .alumni-card {
                 width: 100% !important;
                 max-width: none !important;
                 margin: 0 !important;
@@ -1370,8 +1368,8 @@
         }
         @media (max-width: 1400px) { .cluster-expansion-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.2rem; } }
         @media (max-width: 1024px) { .cluster-expansion-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; padding: 0.5rem; } }
-        /* Mobile override for cluster expansion grid - force 2 columns */
-        @media (max-width: 768px) { .cluster-expansion-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 0.75rem !important; } }
+        /* Mobile override for cluster expansion grid - force 2 columns ONLY on mobile */
+        @media (max-width: 480px) { .cluster-expansion-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 0.75rem !important; } }
 
         /* Keep alumni cards same as main page - no overrides needed */
         .cluster-expansion-grid .alumni-card {
@@ -2610,8 +2608,8 @@
             }
 
             .cards-container {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 0.75rem;
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 1rem;
                 padding: 0.5rem;
             }
 
