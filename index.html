@@ -5821,6 +5821,9 @@
                 const container = this.elements.cardsContainer;
                 if (!container) return;
                 
+                // Clear container immediately to prevent showing old content
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #666;">Loading classes...</div>';
+                
                 // Keep mobile-responsive viewport for clustering
                 this.setMobileResponsiveViewport();
                 
@@ -5929,6 +5932,9 @@
                     return;
                 }
                 
+                // Clear container immediately to prevent showing old content
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #666;">Loading degrees...</div>';
+                
                 // Keep mobile-responsive viewport for clustering
                 this.setMobileResponsiveViewport();
                 
@@ -6020,6 +6026,9 @@
                     return;
                 }
                 
+                // Clear container immediately to prevent showing old content
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #666;">Loading industries...</div>';
+                
                 // Keep mobile-responsive viewport for clustering
                 this.setMobileResponsiveViewport();
                 
@@ -6101,6 +6110,9 @@
                     
                     return;
                 }
+                
+                // Clear container immediately to prevent showing old alumni cards
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #666;">Loading companies...</div>';
                 
                 // Keep mobile-responsive viewport for clustering
                 this.setMobileResponsiveViewport();
