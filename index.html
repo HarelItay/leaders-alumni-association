@@ -3883,6 +3883,39 @@
                 return [];
             }
 
+            async getLocalCompanyLogo(companyName) {
+                if (!companyName || companyName.trim() === '' || companyName === 'Unknown Company') {
+                    return null;
+                }
+                
+                // Clean the company name for filename matching
+                const cleanName = companyName.trim();
+                
+                // Try different file extensions
+                const possibleFormats = [
+                    `${cleanName}.jpeg`,
+                    `${cleanName}.jpg`, 
+                    `${cleanName}.png`,
+                    `${cleanName}.svg`
+                ];
+                
+                for (const filename of possibleFormats) {
+                    const imagePath = `images/companies/${filename}`;
+                    
+                    try {
+                        // Try to load the image to see if it exists
+                        const response = await fetch(imagePath, { method: 'HEAD' }).catch(() => ({ ok: false }));
+                        if (response && response.ok) {
+                            return imagePath;
+                        }
+                    } catch (error) {
+                        // Silently handle errors
+                    }
+                }
+                
+                return null;
+            }
+
             getFallbackImageList() {
                 // Fallback list in case GitHub API is not available
                 return [
@@ -6060,7 +6093,7 @@
                 }
             },
 
-            showCompanyClusters() {
+            async showCompanyClusters() {
                 
                 const container = this.elements.cardsContainer;
                 
@@ -6077,7 +6110,7 @@
                 
                 
                 try {
-                    const companies = this.groupAlumniByCompany();
+                    const companies = await this.groupAlumniByCompany();
                     
                     container.innerHTML = '';
 
@@ -6129,7 +6162,7 @@
                 }
             },
 
-            groupAlumniByCompany() {
+            async groupAlumniByCompany() {
                 const companies = {};
                 
                 
@@ -6154,6 +6187,25 @@
                     companies[companyName].count++;
                 });
                 
+                // Load local company logos (similar to profile images)
+                const companyNames = Object.keys(companies);
+                const logoPromises = companyNames.map(async (companyName) => {
+                    // Try to load local logo first
+                    const localLogoUrl = await this.getLocalCompanyLogo(companyName);
+                    if (localLogoUrl) {
+                        companies[companyName].logo_url = localLogoUrl;
+                        
+                        // Also update all alumni objects with this company to have the local logo
+                        companies[companyName].alumni.forEach(alumni => {
+                            if (alumni.professional) {
+                                alumni.professional.company_logo_url = localLogoUrl;
+                            }
+                        });
+                    }
+                    // If no local logo found, keep the existing logo_url from CSV (clearbit or empty)
+                });
+                
+                await Promise.all(logoPromises);
                 
                 return companies;
             },
