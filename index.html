@@ -5747,6 +5747,12 @@
                 
                 this.currentClusterMode = clusterType;
                 
+                // Clear container IMMEDIATELY before any processing
+                const container = this.elements.cardsContainer;
+                if (container && clusterType !== 'none') {
+                    container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #666;">Loading...</div>';
+                }
+                
                 if (clusterType === 'none') {
                     this.showNormalView();
                 } else if (clusterType === 'class') {
@@ -5785,6 +5791,12 @@
                         randomBtn.click();
                     }
                     return;
+                }
+                
+                // Clear container IMMEDIATELY before any processing
+                const container = this.elements.cardsContainer;
+                if (container && clusterType !== 'none') {
+                    container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #666;">Loading...</div>';
                 }
                 
                 // Use the same logic as desktop
