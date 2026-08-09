@@ -1271,29 +1271,19 @@
             background: linear-gradient(180deg, #ffffff, #fafbfc) !important;
         }
 
-        /* Overview grid of cluster cards - 3+2 layout */
+        /* Overview grid of cluster cards - always 3 per row, regardless of how many classes exist */
         .cluster-overview-grid {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(3, 280px);
             justify-content: center;
             gap: 24px;
             align-items: stretch;
             max-width: 1200px;
             margin: 0 auto;
         }
-        
+
         .cluster-overview-grid .alumni-card {
             width: 280px;
-            flex-shrink: 0;
-        }
-        
-        /* Force 3+2 layout - center the bottom row properly */
-        .cluster-overview-grid .alumni-card:nth-child(4) {
-            margin-left: calc(50% - 280px - 12px);
-        }
-        
-        .cluster-overview-grid .alumni-card:nth-child(5) {
-            margin-right: calc(50% - 280px - 12px);
         }
         
         @media (max-width: 768px) { 
@@ -1305,19 +1295,12 @@
                 gap: 16px !important;
             }
             
-            .cluster-overview-grid .alumni-card { 
+            .cluster-overview-grid .alumni-card {
                 width: 280px !important;
                 max-width: calc(100vw - 2rem) !important;
-                margin: 0 !important; /* Remove any margin overrides */
+                margin: 0 !important;
             }
-            
-            /* Remove the nth-child rules that were centering the bottom row since we're now single column */
-            .cluster-overview-grid .alumni-card:nth-child(4),
-            .cluster-overview-grid .alumni-card:nth-child(5) {
-                margin-left: 0 !important;
-                margin-right: 0 !important;
-            }
-            
+
             /* MOBILE ONLY - Ensure alumni cards display 2 in a row */
             .cards-container {
                 grid-template-columns: repeat(2, 1fr) !important;
@@ -1472,6 +1455,7 @@
         .profile-photo.class-2023 { border-color: #45B7D1 !important; } /* Sky Blue - 2023 */
         .profile-photo.class-2024 { border-color: #96CEB4 !important; } /* Sage Green - 2024 */
         .profile-photo.class-2025 { border-color: #FFEAA7 !important; } /* Golden Yellow - 2025 */
+        .profile-photo.class-2026 { border-color: #B19CD9 !important; } /* Lavender Purple - 2026 */
         .profile-photo.class-unknown { border-color: #95A5A6 !important; } /* Gray - Unknown */
 
         .profile-photo:hover {
@@ -5125,6 +5109,7 @@
                     case 2023: return 'class-2023';
                     case 2024: return 'class-2024';
                     case 2025: return 'class-2025';
+                    case 2026: return 'class-2026';
                     default: return 'class-unknown';
                 }
             }
@@ -7105,6 +7090,7 @@
                     'class-2023': '#45B7D1',
                     'class-2024': '#96CEB4',
                     'class-2025': '#FFEAA7',
+                    'class-2026': '#B19CD9',
                     'class-unknown': '#95A5A6'
                 };
                 return colorMap[colorClass] || '#95A5A6';
