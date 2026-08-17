@@ -249,14 +249,25 @@
     height: auto;
     border-bottom: none;
     padding-top: 3px;
+    line-height: 1.25;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  .cell-sig .sig-name {
+    display: block;
     font-size: clamp(0.42rem, 1.6vw, 0.6rem);
     font-weight: 700;
     color: #0B6BFF;
-    line-height: 1.2;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 100%;
+  }
+  .cell-sig .sig-year {
+    display: block;
+    font-size: clamp(0.38rem, 1.4vw, 0.54rem);
+    font-weight: 600;
+    color: #6b7a94;
+    margin-top: 1px;
   }
 
   .cell-mark {
@@ -667,10 +678,12 @@
     cellEl.classList.toggle("marked", entry.marked);
     var sigEl = cellEl.querySelector(".cell-sig");
     if (entry.marked && entry.name) {
-      sigEl.textContent = entry.name + (entry.year ? " • מחזור " + entry.year : "");
+      sigEl.innerHTML =
+        '<span class="sig-name">' + escapeHtml(entry.name) + "</span>" +
+        (entry.year ? '<span class="sig-year">' + escapeHtml(entry.year) + "</span>" : "");
       sigEl.classList.add("filled");
     } else {
-      sigEl.textContent = "";
+      sigEl.innerHTML = "";
       sigEl.classList.remove("filled");
     }
   }
