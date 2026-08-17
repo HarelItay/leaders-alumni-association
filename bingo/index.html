@@ -97,7 +97,8 @@
     color: #333;
     margin-bottom: .4rem;
   }
-  .name-field input {
+  .name-field input,
+  .name-field select {
     width: 100%;
     padding: .85rem 1rem;
     border: 2px solid #dfe6f0;
@@ -106,8 +107,11 @@
     font-family: inherit;
     text-align: right;
     transition: border-color .2s;
+    background: #fff;
+    color: #222;
   }
-  .name-field input:focus {
+  .name-field input:focus,
+  .name-field select:focus {
     outline: none;
     border-color: #0B6BFF;
   }
@@ -237,9 +241,22 @@
   }
   .cell-sig {
     margin-top: auto;
-    width: 78%;
+    width: 82%;
     border-bottom: 1.5px dashed #b9c3d6;
     height: 1px;
+  }
+  .cell-sig.filled {
+    height: auto;
+    border-bottom: none;
+    padding-top: 3px;
+    font-size: clamp(0.42rem, 1.6vw, 0.6rem);
+    font-weight: 700;
+    color: #0B6BFF;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
   }
 
   .cell-mark {
@@ -328,6 +345,18 @@
   }
   .modal h2 { font-size: 1.15rem; margin-bottom: .3rem; color: #222; }
   .modal .modal-note { font-size: .8rem; color: #888; margin-bottom: 1rem; line-height: 1.6; }
+  .modal .modal-task {
+    background: #f4f8ff;
+    border-radius: 10px;
+    padding: .7rem .9rem;
+    font-size: .85rem;
+    font-weight: 600;
+    color: #0B6BFF;
+    line-height: 1.5;
+    margin-top: .6rem;
+    margin-bottom: 1.2rem;
+  }
+  .modal-cancel-btn { width: 100%; margin-top: .6rem; }
   .modal table { width: 100%; border-collapse: collapse; font-size: .85rem; }
   .modal th, .modal td { padding: .5rem .3rem; border-bottom: 1px solid #eee; text-align: right; }
   .modal th { color: #666; font-weight: 600; }
@@ -358,8 +387,8 @@
         <p class="sub">המקום בו בוגרי LEADERS מתחברים, מתערבבים ומכירים פנים חדשות. מלאו את שמכם, קבלו לוח בינגו אישי, ומצאו בוגרים שמתאימים לכל משבצת!</p>
 
         <div class="rules">
-          בכל משבצת יש <b>משימה</b> ושורת חתימה לרישום מי עונה עליה.<br>
-          מצאתם בוגר/ת שמתאים/ה? לחצו על המשבצת כדי לסמן <b>X</b> — הטקסט יישאר גלוי מתחתיו.<br>
+          בכל משבצת יש <b>משימה</b>. מצאתם בוגר/ת שמתאים/ה? לחצו על המשבצת, כתבו את שמו/ה ובחרו שנת סיום.<br>
+          המשבצת תסומן ב-<b>X</b> והשם יופיע בתחתיתה — הכל עדיין גלוי מתחת לסימון.<br>
           השלימו שורה, טור או אלכסון שלם כדי לזכות ב<b>בינגו!</b> 🎉
         </div>
 
@@ -413,6 +442,36 @@
         <button class="btn-small" id="export-csv-btn">ייצוא ל-CSV</button>
         <button class="btn-small" id="close-admin-btn">סגירה</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ================= ENTRY MODAL ================= -->
+  <div class="modal-backdrop" id="entry-modal-backdrop">
+    <div class="modal">
+      <h2>מי ענה/תה על המשימה?</h2>
+      <div class="modal-task" id="entry-modal-task"></div>
+      <form id="entry-modal-form" autocomplete="off">
+        <div class="name-field">
+          <label for="entry-name-input">שם הבוגר/ת</label>
+          <input type="text" id="entry-name-input" placeholder="לדוגמה: איתי הראל" maxlength="60">
+          <div class="form-error" id="entry-name-error">נא להזין שם</div>
+        </div>
+        <div class="name-field">
+          <label for="entry-year-select">שנת סיום</label>
+          <select id="entry-year-select">
+            <option value="">בחר/י שנה</option>
+            <option value="2021">2021</option>
+            <option value="2022">2022</option>
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+          </select>
+          <div class="form-error" id="entry-year-error">נא לבחור שנת סיום</div>
+        </div>
+        <button type="submit" class="btn-primary">סימון המשבצת ✓</button>
+      </form>
+      <button type="button" class="btn-small modal-cancel-btn" id="entry-cancel-btn">ביטול</button>
     </div>
   </div>
 
@@ -486,17 +545,34 @@
 
   function normalizeName(name) { return name.trim().replace(/\s+/g, " "); }
 
+  // Each board cell is stored as { marked, name, year }. normalizeBoard()
+  // also upgrades boards saved by earlier versions of the game, where a
+  // cell was just a plain boolean.
+  function normalizeBoard(board) {
+    var out = [];
+    for (var i = 0; i < 25; i++) {
+      var cell = board && board[i];
+      if (cell && typeof cell === "object") {
+        out.push({ marked: !!cell.marked, name: cell.name || "", year: cell.year || "" });
+      } else {
+        out.push({ marked: !!cell, name: "", year: "" });
+      }
+    }
+    return out;
+  }
+
   function getOrCreatePlayer(name) {
     var key = name;
     if (!store.players[key]) {
-      var board = new Array(25).fill(false);
       store.players[key] = {
         name: name,
         joinedAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        board: board
+        board: normalizeBoard(null)
       };
       saveStore(store);
+    } else {
+      store.players[key].board = normalizeBoard(store.players[key].board);
     }
     return store.players[key];
   }
@@ -523,6 +599,15 @@
   var adminBackdrop = document.getElementById("admin-modal-backdrop");
   var adminListWrap = document.getElementById("admin-list-wrap");
   var exportCsvBtn = document.getElementById("export-csv-btn");
+  var entryModalBackdrop = document.getElementById("entry-modal-backdrop");
+  var entryModalTask = document.getElementById("entry-modal-task");
+  var entryModalForm = document.getElementById("entry-modal-form");
+  var entryNameInput = document.getElementById("entry-name-input");
+  var entryNameError = document.getElementById("entry-name-error");
+  var entryYearSelect = document.getElementById("entry-year-select");
+  var entryYearError = document.getElementById("entry-year-error");
+  var entryCancelBtn = document.getElementById("entry-cancel-btn");
+  var pendingCellIndex = null;
 
   function showScreen(id) {
     [landingScreen, gameScreen].forEach(function (s) {
@@ -566,51 +651,86 @@
       cell.appendChild(markSvg);
 
       cell.addEventListener("click", function () {
-        toggleCell(parseInt(this.dataset.index, 10));
+        handleCellClick(parseInt(this.dataset.index, 10));
       });
 
       gridEl.appendChild(cell);
     }
   }
 
+  function renderCellDisplay(index) {
+    var player = store.players[currentName];
+    if (!player) return;
+    var entry = player.board[index];
+    var cellEl = gridEl.children[index];
+    if (!cellEl) return;
+    cellEl.classList.toggle("marked", entry.marked);
+    var sigEl = cellEl.querySelector(".cell-sig");
+    if (entry.marked && entry.name) {
+      sigEl.textContent = entry.name + (entry.year ? " • מחזור " + entry.year : "");
+      sigEl.classList.add("filled");
+    } else {
+      sigEl.textContent = "";
+      sigEl.classList.remove("filled");
+    }
+  }
+
   function renderBoard() {
     var player = store.players[currentName];
     if (!player) return;
-    var cells = gridEl.children;
-    for (var i = 0; i < 25; i++) {
-      cells[i].classList.toggle("marked", !!player.board[i]);
-    }
+    for (var i = 0; i < 25; i++) renderCellDisplay(i);
     updateProgress();
   }
 
   function updateProgress() {
     var player = store.players[currentName];
-    var markedCount = player.board.filter(Boolean).length;
+    var markedCount = player.board.filter(function (c) { return c.marked; }).length;
     var pct = Math.round((markedCount / 25) * 100);
     progressBar.style.width = pct + "%";
   }
 
-  function toggleCell(index) {
+  // Clicking an empty square opens the entry popup; clicking a filled
+  // square unmarks it directly (no popup needed to clear it).
+  function handleCellClick(index) {
     var player = store.players[currentName];
     if (!player) return;
-    player.board[index] = !player.board[index];
+    if (player.board[index].marked) {
+      unmarkCell(index);
+    } else {
+      openEntryModal(index);
+    }
+  }
+
+  function unmarkCell(index) {
+    var player = store.players[currentName];
+    if (!player) return;
+    player.board[index] = { marked: false, name: "", year: "" };
     player.updatedAt = new Date().toISOString();
     saveStore(store);
-
-    var cellEl = gridEl.children[index];
-    cellEl.classList.toggle("marked", player.board[index]);
-    if (player.board[index]) {
-      cellEl.classList.add("just-marked");
-      setTimeout(function () { cellEl.classList.remove("just-marked"); }, 300);
-    }
+    renderCellDisplay(index);
     updateProgress();
-    checkForBingo(player.board);
+  }
+
+  function openEntryModal(index) {
+    pendingCellIndex = index;
+    entryModalTask.textContent = TASKS[index];
+    entryNameInput.value = "";
+    entryYearSelect.value = "";
+    entryNameError.style.display = "none";
+    entryYearError.style.display = "none";
+    entryModalBackdrop.classList.add("show");
+    setTimeout(function () { entryNameInput.focus(); }, 50);
+  }
+
+  function closeEntryModal() {
+    entryModalBackdrop.classList.remove("show");
+    pendingCellIndex = null;
   }
 
   function checkForBingo(board) {
     for (var i = 0; i < WIN_LINES.length; i++) {
       var line = WIN_LINES[i];
-      var complete = line.every(function (idx) { return board[idx]; });
+      var complete = line.every(function (idx) { return board[idx].marked; });
       if (complete && celebratedLines.indexOf(i) === -1) {
         celebratedLines.push(i);
         showBingoToast();
@@ -636,7 +756,7 @@
     renderBoard();
     // pre-mark already-completed lines as "celebrated" so reopening a finished board doesn't re-toast
     WIN_LINES.forEach(function (line, i) {
-      if (line.every(function (idx) { return player.board[idx]; })) celebratedLines.push(i);
+      if (line.every(function (idx) { return player.board[idx].marked; })) celebratedLines.push(i);
     });
     showScreen("game");
   }
@@ -663,12 +783,48 @@
     if (!currentName) return;
     if (!confirm("להתחיל לוח בינגו חדש ולמחוק את הסימונים הנוכחיים?")) return;
     var player = store.players[currentName];
-    var board = new Array(25).fill(false);
-    player.board = board;
+    player.board = normalizeBoard(null);
     player.updatedAt = new Date().toISOString();
     saveStore(store);
     celebratedLines = [];
     renderBoard();
+  });
+
+  // ---------- entry modal (name + graduation year) ----------
+  entryModalForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (pendingCellIndex === null) return;
+
+    var name = normalizeName(entryNameInput.value || "");
+    var year = entryYearSelect.value;
+    var valid = true;
+    if (!name) { entryNameError.style.display = "block"; valid = false; } else { entryNameError.style.display = "none"; }
+    if (!year) { entryYearError.style.display = "block"; valid = false; } else { entryYearError.style.display = "none"; }
+    if (!valid) return;
+
+    var index = pendingCellIndex;
+    var player = store.players[currentName];
+    if (!player) return;
+    player.board[index] = { marked: true, name: name, year: year };
+    player.updatedAt = new Date().toISOString();
+    saveStore(store);
+
+    renderCellDisplay(index);
+    var cellEl = gridEl.children[index];
+    cellEl.classList.add("just-marked");
+    setTimeout(function () { cellEl.classList.remove("just-marked"); }, 300);
+
+    updateProgress();
+    checkForBingo(player.board);
+    closeEntryModal();
+  });
+
+  entryCancelBtn.addEventListener("click", closeEntryModal);
+  entryModalBackdrop.addEventListener("click", function (e) {
+    if (e.target === entryModalBackdrop) closeEntryModal();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && entryModalBackdrop.classList.contains("show")) closeEntryModal();
   });
 
   // ---------- admin modal ----------
@@ -682,7 +838,7 @@
     }
 
     var rows = players.map(function (p) {
-      var marked = p.board.filter(Boolean).length;
+      var marked = p.board.filter(function (c) { return c.marked; }).length;
       var d = new Date(p.joinedAt);
       var dateStr = d.toLocaleDateString("he-IL") + " " + d.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
       return "<tr><td>" + escapeHtml(p.name) + "</td><td>" + marked + "/25</td><td>" + dateStr + "</td></tr>";
@@ -714,7 +870,7 @@
     var players = Object.keys(store.players).map(function (k) { return store.players[k]; });
     var lines = ["שם,התקדמות,הצטרפ/ה"];
     players.forEach(function (p) {
-      var marked = p.board.filter(Boolean).length;
+      var marked = p.board.filter(function (c) { return c.marked; }).length;
       lines.push('"' + p.name.replace(/"/g, '""') + '",' + marked + "/25," + p.joinedAt);
     });
     var csv = "﻿" + lines.join("\n");
