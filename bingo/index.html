@@ -218,7 +218,6 @@
   }
   .cell:hover { transform: translateY(-2px); }
   .cell:active { transform: scale(0.96); }
-  .cell.free { cursor: default; background: linear-gradient(135deg, #fff7e8, #ffe9c2); }
 
   .cell-content {
     position: absolute;
@@ -236,7 +235,6 @@
     line-height: 1.25;
     color: #2a2a2a;
   }
-  .cell.free .cell-task { font-size: clamp(0.55rem, 2.3vw, 0.78rem); color: #b5730a; font-weight: 800; }
   .cell-sig {
     margin-top: auto;
     width: 78%;
@@ -259,8 +257,6 @@
     stroke-linecap: round;
     opacity: .8;
   }
-  .cell.free .cell-mark line { stroke: #F39C12; }
-
   .cell.just-marked { animation: pop .28s ease; }
   @keyframes pop {
     0% { transform: scale(1); }
@@ -428,33 +424,32 @@
   var CURRENT_PLAYER_KEY = "leadersBingo_currentPlayer";
 
   var TASKS = [
-    "מישהו שלמד קורס אחר משלך",
-    "מישהו שעובד בהייטק",
-    "מישהו שהתחתן/נישאה השנה",
-    "מישהו שיש לו/ה חיית מחמד",
-    "מישהו שגר/ה כרגע בחו\"ל",
-    "מישהו שהחליף/ה תחום קריירה",
-    "מישהו שהוא/היא הורה",
-    "מישהו שיודע/ת לנגן בכלי נגינה",
-    "מישהו שהקים/ה סטארטאפ",
-    "מישהו שרץ/ה מרתון",
-    "מישהו שלמד/ה תואר שני",
-    "מישהו שהכיר/ה אותך לפני התוכנית",
-    "חינם 🎓",
-    "מישהו שביקר/ה ביותר מ-10 מדינות",
-    "מישהו שעובד/ת בתפקיד ניהולי",
-    "מישהו שיש לו/ה קעקוע",
-    "מישהו שדובר/ת 3 שפות ומעלה",
-    "מישהו שהתנדב/ה בשנה האחרונה",
-    "מישהו שמכור/ה לקפה",
-    "מישהו ששינה/תה עיר מגורים",
-    "מישהו שפגשת בפעם הראשונה היום",
-    "מישהו עם תואר בהנדסה",
-    "מישהו שאוהב/ת לבשל",
-    "מישהו שהיה/הייתה ביחידה מיוחדת",
-    "מישהו שהוא/היא בוגר/ת מחזור אחר"
+    "גר במרחק פחות מ-20 דקות ממך",
+    "מדבר שלוש שפות או יותר",
+    "עובד בסקטור שלך — אבל לא בחברה שלך",
+    "מנהל צוות של יותר מחמישה אנשים",
+    "רץ מרתון או עשה טריאתלון",
+    "שינה תחום קריירה לגמרי לפחות פעם אחת",
+    "הקים משהו — חברה, עמותה, קהילה, קבוצה",
+    "יש לו פטנט על שמו",
+    "היה בחו\"ל בשלושה החודשים האחרונים",
+    "נמצא בתקופת מעבר או מחפש את הצעד הבא",
+    "מנגן על כלי שאף אחד אחר בחדר לא מנגן עליו",
+    "לומד משהו עכשיו — תואר, קורס, הסמכה",
+    "יש לו side project שלא מספרים עליו בעבודה",
+    "גר בשלוש מדינות לפחות",
+    "עובד מהבית לפחות חצי מהשבוע",
+    "עבד בסטארטאפ שנסגר",
+    "הופיע בתקשורת בשנה האחרונה",
+    "הוא מנטור של מישהו, או שיש לו מנטור",
+    "מגייס כרגע לתפקיד",
+    "עשה ראיון עבודה שהוא זוכר לרעה",
+    "עשה רילוקיישן — וחזר",
+    "מקשיב לאותו פודקאסט כמוך",
+    "עובד בחברה שאתה שקלת פעם להגיע אליה",
+    "יכול ללמד אותך משהו שימושי בעשר דקות",
+    "עשה בשנה האחרונה משהו שהפחיד אותו"
   ];
-  var FREE_INDEX = 12; // center of 5x5
 
   var WIN_LINES = (function () {
     var lines = [];
@@ -495,7 +490,6 @@
     var key = name;
     if (!store.players[key]) {
       var board = new Array(25).fill(false);
-      board[FREE_INDEX] = true;
       store.players[key] = {
         name: name,
         joinedAt: new Date().toISOString(),
@@ -539,9 +533,8 @@
   function buildGrid() {
     gridEl.innerHTML = "";
     for (var i = 0; i < 25; i++) {
-      var isFree = i === FREE_INDEX;
       var cell = document.createElement("div");
-      cell.className = "cell" + (isFree ? " free" : "");
+      cell.className = "cell";
       cell.dataset.index = i;
 
       var content = document.createElement("div");
@@ -552,11 +545,9 @@
       task.textContent = TASKS[i];
       content.appendChild(task);
 
-      if (!isFree) {
-        var sig = document.createElement("div");
-        sig.className = "cell-sig";
-        content.appendChild(sig);
-      }
+      var sig = document.createElement("div");
+      sig.className = "cell-sig";
+      content.appendChild(sig);
 
       var markSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
       markSvg.setAttribute("class", "cell-mark");
@@ -574,11 +565,9 @@
       cell.appendChild(content);
       cell.appendChild(markSvg);
 
-      if (!isFree) {
-        cell.addEventListener("click", function () {
-          toggleCell(parseInt(this.dataset.index, 10));
-        });
-      }
+      cell.addEventListener("click", function () {
+        toggleCell(parseInt(this.dataset.index, 10));
+      });
 
       gridEl.appendChild(cell);
     }
@@ -675,7 +664,6 @@
     if (!confirm("להתחיל לוח בינגו חדש ולמחוק את הסימונים הנוכחיים?")) return;
     var player = store.players[currentName];
     var board = new Array(25).fill(false);
-    board[FREE_INDEX] = true;
     player.board = board;
     player.updatedAt = new Date().toISOString();
     saveStore(store);
