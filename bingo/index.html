@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>בינגו הבוגרים - LEADERS Alumni Association</title>
+<meta name="description" content="בינגו הבוגרים - שחקו, הכירו בוגרים חדשים וסמנו X על כל משבצת שמצאתם עבורה מישהו מתאים.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { overflow-x: hidden; }
+  body {
+    font-family: 'Heebo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #0B6BFF 0%, #00C2A8 100%);
+    min-height: 100vh;
+    color: #222;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 720px;
+    padding: 1.5rem 1rem 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+  }
+
+  /* ---------- top brand bar ---------- */
+  .brandbar {
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .6rem;
+    color: #fff;
+    padding: 1rem 1rem .5rem;
+    text-align: center;
+  }
+  .brandbar .logo-emoji { font-size: 1.6rem; }
+  .brandbar span.brand-name { font-weight: 700; letter-spacing: .3px; }
+
+  /* ---------- screens ---------- */
+  .screen { width: 100%; display: none; flex-direction: column; align-items: center; }
+  .screen.active { display: flex; }
+
+  /* ---------- landing screen ---------- */
+  .landing-card {
+    background: rgba(255,255,255,0.97);
+    border-radius: 24px;
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 480px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    margin-top: 1.5rem;
+  }
+  .landing-logo { font-size: 3.5rem; margin-bottom: .5rem; }
+  .landing-card h1 {
+    font-size: 1.9rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #0B6BFF, #00C2A8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: .4rem;
+  }
+  .landing-card .sub {
+    color: #555;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1.6rem;
+  }
+  .landing-card .rules {
+    text-align: right;
+    background: #f4f8ff;
+    border-radius: 14px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.6rem;
+    font-size: .92rem;
+    color: #444;
+    line-height: 1.9;
+  }
+  .landing-card .rules b { color: #0B6BFF; }
+
+  .name-field { text-align: right; margin-bottom: 1.2rem; }
+  .name-field label {
+    display: block;
+    font-weight: 600;
+    font-size: .9rem;
+    color: #333;
+    margin-bottom: .4rem;
+  }
+  .name-field input {
+    width: 100%;
+    padding: .85rem 1rem;
+    border: 2px solid #dfe6f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: inherit;
+    text-align: right;
+    transition: border-color .2s;
+  }
+  .name-field input:focus {
+    outline: none;
+    border-color: #0B6BFF;
+  }
+
+  .btn-primary {
+    display: inline-block;
+    width: 100%;
+    background: linear-gradient(135deg, #0B6BFF, #00C2A8);
+    color: #fff;
+    border: none;
+    padding: .95rem 1.5rem;
+    border-radius: 14px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(11,107,255,0.35);
+    transition: transform .15s, box-shadow .15s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(11,107,255,0.45); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .form-error {
+    color: #e0523c;
+    font-size: .85rem;
+    margin-top: .5rem;
+    display: none;
+    text-align: right;
+  }
+
+  .returning-note {
+    margin-top: 1rem;
+    font-size: .85rem;
+    color: #888;
+  }
+
+  /* ---------- game screen ---------- */
+  .game-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    background: rgba(255,255,255,0.95);
+    border-radius: 18px;
+    padding: .9rem 1.2rem;
+    margin-bottom: 1.1rem;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    flex-wrap: wrap;
+  }
+  .game-header .greeting {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #222;
+  }
+  .game-header .greeting .wave { display: inline-block; }
+  .header-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+  .btn-small {
+    background: #fff;
+    border: 2px solid #dfe6f0;
+    color: #333;
+    padding: .45rem .9rem;
+    border-radius: 10px;
+    font-size: .82rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color .15s, color .15s;
+    white-space: nowrap;
+  }
+  .btn-small:hover { border-color: #0B6BFF; color: #0B6BFF; }
+  .btn-small.danger:hover { border-color: #e0523c; color: #e0523c; }
+
+  .progress-bar-outer {
+    width: 100%;
+    background: rgba(255,255,255,0.4);
+    border-radius: 999px;
+    height: 8px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .progress-bar-inner {
+    height: 100%;
+    background: #F39C12;
+    width: 0%;
+    border-radius: 999px;
+    transition: width .3s ease;
+  }
+
+  /* ---------- bingo grid ---------- */
+  .grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .cell {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: rgba(255,255,255,0.95);
+    border-radius: 10px;
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+    transition: transform .12s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .cell:hover { transform: translateY(-2px); }
+  .cell:active { transform: scale(0.96); }
+  .cell.free { cursor: default; background: linear-gradient(135deg, #fff7e8, #ffe9c2); }
+
+  .cell-content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6% 6% 10%;
+    text-align: center;
+  }
+  .cell-task {
+    font-size: clamp(0.5rem, 2.1vw, 0.72rem);
+    font-weight: 600;
+    line-height: 1.25;
+    color: #2a2a2a;
+  }
+  .cell.free .cell-task { font-size: clamp(0.55rem, 2.3vw, 0.78rem); color: #b5730a; font-weight: 800; }
+  .cell-sig {
+    margin-top: auto;
+    width: 78%;
+    border-bottom: 1.5px dashed #b9c3d6;
+    height: 1px;
+  }
+
+  .cell-mark {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity .18s ease;
+    pointer-events: none;
+  }
+  .cell.marked .cell-mark { opacity: 1; }
+  .cell.marked .cell-content { opacity: .55; }
+  .cell-mark line {
+    stroke: #e0523c;
+    stroke-width: 9;
+    stroke-linecap: round;
+    opacity: .8;
+  }
+  .cell.free .cell-mark line { stroke: #F39C12; }
+
+  .cell.just-marked { animation: pop .28s ease; }
+  @keyframes pop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+
+  /* ---------- bingo toast ---------- */
+  .bingo-toast {
+    position: fixed;
+    top: -150px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #F39C12, #e0523c);
+    color: #fff;
+    padding: 1rem 2rem;
+    border-radius: 16px;
+    font-size: 1.3rem;
+    font-weight: 800;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+    z-index: 999;
+    transition: top .35s cubic-bezier(.34,1.56,.64,1);
+    text-align: center;
+    white-space: nowrap;
+  }
+  .bingo-toast.show { top: 20px; }
+
+  /* ---------- footer ---------- */
+  .footer {
+    width: 100%;
+    max-width: 720px;
+    text-align: center;
+    color: rgba(255,255,255,0.85);
+    font-size: .78rem;
+    padding: 1.5rem 1rem 0;
+    line-height: 1.8;
+  }
+  .footer button.link-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    text-decoration: underline;
+    font-family: inherit;
+    font-size: .78rem;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  /* ---------- admin modal ---------- */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(15,25,45,0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+  }
+  .modal-backdrop.show { display: flex; }
+  .modal {
+    background: #fff;
+    border-radius: 18px;
+    padding: 1.6rem;
+    width: 100%;
+    max-width: 420px;
+    max-height: 80vh;
+    overflow-y: auto;
+    text-align: right;
+  }
+  .modal h2 { font-size: 1.15rem; margin-bottom: .3rem; color: #222; }
+  .modal .modal-note { font-size: .8rem; color: #888; margin-bottom: 1rem; line-height: 1.6; }
+  .modal table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+  .modal th, .modal td { padding: .5rem .3rem; border-bottom: 1px solid #eee; text-align: right; }
+  .modal th { color: #666; font-weight: 600; }
+  .modal .empty { color: #999; font-size: .85rem; padding: 1rem 0; text-align: center; }
+  .modal-actions { display: flex; gap: .5rem; margin-top: 1.1rem; }
+  .modal-actions button { flex: 1; }
+
+  @media (max-width: 420px) {
+    .landing-card { padding: 2rem 1.3rem; }
+    .game-header { padding: .75rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="brandbar">
+    <span class="logo-emoji">🎓</span>
+    <span class="brand-name">LEADERS Alumni Association</span>
+  </div>
+
+  <div class="wrap">
+
+    <!-- ================= LANDING SCREEN ================= -->
+    <section id="landing" class="screen active">
+      <div class="landing-card">
+        <div class="landing-logo">🎓🎲</div>
+        <h1>בינגו הבוגרים</h1>
+        <p class="sub">המקום בו בוגרי LEADERS מתחברים, מתערבבים ומכירים פנים חדשות. מלאו את שמכם, קבלו לוח בינגו אישי, ומצאו בוגרים שמתאימים לכל משבצת!</p>
+
+        <div class="rules">
+          בכל משבצת יש <b>משימה</b> ושורת חתימה לרישום מי עונה עליה.<br>
+          מצאתם בוגר/ת שמתאים/ה? לחצו על המשבצת כדי לסמן <b>X</b> — הטקסט יישאר גלוי מתחתיו.<br>
+          השלימו שורה, טור או אלכסון שלם כדי לזכות ב<b>בינגו!</b> 🎉
+        </div>
+
+        <form id="entry-form" autocomplete="off">
+          <div class="name-field">
+            <label for="player-name">מה השם שלך?</label>
+            <input type="text" id="player-name" placeholder="לדוגמה: דנה כהן" maxlength="60" required>
+            <div class="form-error" id="name-error">נא להזין שם כדי להתחיל</div>
+          </div>
+          <button type="submit" class="btn-primary">בואו נתחיל! 🚀</button>
+        </form>
+        <div class="returning-note" id="returning-note"></div>
+      </div>
+    </section>
+
+    <!-- ================= GAME SCREEN ================= -->
+    <section id="game" class="screen">
+      <div class="game-header">
+        <div class="greeting">שלום, <span id="player-name-display"></span> <span class="wave">👋</span></div>
+        <div class="header-actions">
+          <button class="btn-small" id="switch-player-btn">החלפת שחקן/ית</button>
+          <button class="btn-small danger" id="reset-board-btn">לוח חדש</button>
+        </div>
+      </div>
+
+      <div class="progress-bar-outer">
+        <div class="progress-bar-inner" id="progress-bar"></div>
+      </div>
+
+      <div class="grid" id="bingo-grid"></div>
+    </section>
+
+  </div>
+
+  <div class="footer">
+    <div>© LEADERS Alumni Association · בינגו הבוגרים</div>
+    <button class="link-btn" id="open-admin-btn">מי שיחק במכשיר הזה?</button>
+  </div>
+
+  <div class="bingo-toast" id="bingo-toast">🎉 בינגו!</div>
+
+  <!-- ================= ADMIN MODAL ================= -->
+  <div class="modal-backdrop" id="admin-modal-backdrop">
+    <div class="modal">
+      <h2>משתתפים שנרשמו במכשיר הזה</h2>
+      <p class="modal-note">
+        המשחק שומר את הנתונים בזיכרון הדפדפן (localStorage) של המכשיר הנוכחי בלבד — לכן הרשימה הזו מציגה רק שחקנים שנכנסו מהמכשיר הזה. ניתן לייצא לקובץ CSV.
+      </p>
+      <div id="admin-list-wrap"></div>
+      <div class="modal-actions">
+        <button class="btn-small" id="export-csv-btn">ייצוא ל-CSV</button>
+        <button class="btn-small" id="close-admin-btn">סגירה</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function () {
+  "use strict";
+
+  var STORAGE_KEY = "leadersBingo_v1";
+  var CURRENT_PLAYER_KEY = "leadersBingo_currentPlayer";
+
+  var TASKS = [
+    "מישהו שלמד קורס אחר משלך",
+    "מישהו שעובד בהייטק",
+    "מישהו שהתחתן/נישאה השנה",
+    "מישהו שיש לו/ה חיית מחמד",
+    "מישהו שגר/ה כרגע בחו\"ל",
+    "מישהו שהחליף/ה תחום קריירה",
+    "מישהו שהוא/היא הורה",
+    "מישהו שיודע/ת לנגן בכלי נגינה",
+    "מישהו שהקים/ה סטארטאפ",
+    "מישהו שרץ/ה מרתון",
+    "מישהו שלמד/ה תואר שני",
+    "מישהו שהכיר/ה אותך לפני התוכנית",
+    "חינם 🎓",
+    "מישהו שביקר/ה ביותר מ-10 מדינות",
+    "מישהו שעובד/ת בתפקיד ניהולי",
+    "מישהו שיש לו/ה קעקוע",
+    "מישהו שדובר/ת 3 שפות ומעלה",
+    "מישהו שהתנדב/ה בשנה האחרונה",
+    "מישהו שמכור/ה לקפה",
+    "מישהו ששינה/תה עיר מגורים",
+    "מישהו שפגשת בפעם הראשונה היום",
+    "מישהו עם תואר בהנדסה",
+    "מישהו שאוהב/ת לבשל",
+    "מישהו שהיה/הייתה ביחידה מיוחדת",
+    "מישהו שהוא/היא בוגר/ת מחזור אחר"
+  ];
+  var FREE_INDEX = 12; // center of 5x5
+
+  var WIN_LINES = (function () {
+    var lines = [];
+    for (var r = 0; r < 5; r++) {
+      var row = [];
+      for (var c = 0; c < 5; c++) row.push(r * 5 + c);
+      lines.push(row);
+    }
+    for (var c2 = 0; c2 < 5; c2++) {
+      var col = [];
+      for (var r2 = 0; r2 < 5; r2++) col.push(r2 * 5 + c2);
+      lines.push(col);
+    }
+    lines.push([0, 6, 12, 18, 24]);
+    lines.push([4, 8, 12, 16, 20]);
+    return lines;
+  })();
+
+  function loadStore() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : { players: {} };
+    } catch (e) {
+      return { players: {} };
+    }
+  }
+  function saveStore(store) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(store)); } catch (e) {}
+  }
+
+  var store = loadStore();
+  var currentName = null;
+  var celebratedLines = [];
+
+  function normalizeName(name) { return name.trim().replace(/\s+/g, " "); }
+
+  function getOrCreatePlayer(name) {
+    var key = name;
+    if (!store.players[key]) {
+      var board = new Array(25).fill(false);
+      board[FREE_INDEX] = true;
+      store.players[key] = {
+        name: name,
+        joinedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        board: board
+      };
+      saveStore(store);
+    }
+    return store.players[key];
+  }
+
+  function persistCurrentPlayer(name) {
+    try { localStorage.setItem(CURRENT_PLAYER_KEY, name); } catch (e) {}
+  }
+
+  // ---------- DOM refs ----------
+  var landingScreen = document.getElementById("landing");
+  var gameScreen = document.getElementById("game");
+  var entryForm = document.getElementById("entry-form");
+  var nameInput = document.getElementById("player-name");
+  var nameError = document.getElementById("name-error");
+  var returningNote = document.getElementById("returning-note");
+  var playerNameDisplay = document.getElementById("player-name-display");
+  var gridEl = document.getElementById("bingo-grid");
+  var progressBar = document.getElementById("progress-bar");
+  var toastEl = document.getElementById("bingo-toast");
+  var switchBtn = document.getElementById("switch-player-btn");
+  var resetBtn = document.getElementById("reset-board-btn");
+  var openAdminBtn = document.getElementById("open-admin-btn");
+  var closeAdminBtn = document.getElementById("close-admin-btn");
+  var adminBackdrop = document.getElementById("admin-modal-backdrop");
+  var adminListWrap = document.getElementById("admin-list-wrap");
+  var exportCsvBtn = document.getElementById("export-csv-btn");
+
+  function showScreen(id) {
+    [landingScreen, gameScreen].forEach(function (s) {
+      s.classList.toggle("active", s.id === id);
+    });
+  }
+
+  function buildGrid() {
+    gridEl.innerHTML = "";
+    for (var i = 0; i < 25; i++) {
+      var isFree = i === FREE_INDEX;
+      var cell = document.createElement("div");
+      cell.className = "cell" + (isFree ? " free" : "");
+      cell.dataset.index = i;
+
+      var content = document.createElement("div");
+      content.className = "cell-content";
+
+      var task = document.createElement("div");
+      task.className = "cell-task";
+      task.textContent = TASKS[i];
+      content.appendChild(task);
+
+      if (!isFree) {
+        var sig = document.createElement("div");
+        sig.className = "cell-sig";
+        content.appendChild(sig);
+      }
+
+      var markSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      markSvg.setAttribute("class", "cell-mark");
+      markSvg.setAttribute("viewBox", "0 0 100 100");
+      markSvg.setAttribute("preserveAspectRatio", "none");
+      var l1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      l1.setAttribute("x1", "12"); l1.setAttribute("y1", "12");
+      l1.setAttribute("x2", "88"); l1.setAttribute("y2", "88");
+      var l2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      l2.setAttribute("x1", "88"); l2.setAttribute("y1", "12");
+      l2.setAttribute("x2", "12"); l2.setAttribute("y2", "88");
+      markSvg.appendChild(l1);
+      markSvg.appendChild(l2);
+
+      cell.appendChild(content);
+      cell.appendChild(markSvg);
+
+      if (!isFree) {
+        cell.addEventListener("click", function () {
+          toggleCell(parseInt(this.dataset.index, 10));
+        });
+      }
+
+      gridEl.appendChild(cell);
+    }
+  }
+
+  function renderBoard() {
+    var player = store.players[currentName];
+    if (!player) return;
+    var cells = gridEl.children;
+    for (var i = 0; i < 25; i++) {
+      cells[i].classList.toggle("marked", !!player.board[i]);
+    }
+    updateProgress();
+  }
+
+  function updateProgress() {
+    var player = store.players[currentName];
+    var markedCount = player.board.filter(Boolean).length;
+    var pct = Math.round((markedCount / 25) * 100);
+    progressBar.style.width = pct + "%";
+  }
+
+  function toggleCell(index) {
+    var player = store.players[currentName];
+    if (!player) return;
+    player.board[index] = !player.board[index];
+    player.updatedAt = new Date().toISOString();
+    saveStore(store);
+
+    var cellEl = gridEl.children[index];
+    cellEl.classList.toggle("marked", player.board[index]);
+    if (player.board[index]) {
+      cellEl.classList.add("just-marked");
+      setTimeout(function () { cellEl.classList.remove("just-marked"); }, 300);
+    }
+    updateProgress();
+    checkForBingo(player.board);
+  }
+
+  function checkForBingo(board) {
+    for (var i = 0; i < WIN_LINES.length; i++) {
+      var line = WIN_LINES[i];
+      var complete = line.every(function (idx) { return board[idx]; });
+      if (complete && celebratedLines.indexOf(i) === -1) {
+        celebratedLines.push(i);
+        showBingoToast();
+        break;
+      }
+    }
+  }
+
+  var toastTimer = null;
+  function showBingoToast() {
+    toastEl.classList.add("show");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove("show"); }, 2600);
+  }
+
+  function startGameFor(name) {
+    currentName = name;
+    var player = getOrCreatePlayer(name);
+    persistCurrentPlayer(name);
+    playerNameDisplay.textContent = name;
+    celebratedLines = [];
+    buildGrid();
+    renderBoard();
+    // pre-mark already-completed lines as "celebrated" so reopening a finished board doesn't re-toast
+    WIN_LINES.forEach(function (line, i) {
+      if (line.every(function (idx) { return player.board[idx]; })) celebratedLines.push(i);
+    });
+    showScreen("game");
+  }
+
+  entryForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var name = normalizeName(nameInput.value || "");
+    if (!name) {
+      nameError.style.display = "block";
+      return;
+    }
+    nameError.style.display = "none";
+    startGameFor(name);
+  });
+
+  switchBtn.addEventListener("click", function () {
+    currentName = null;
+    try { localStorage.removeItem(CURRENT_PLAYER_KEY); } catch (e) {}
+    nameInput.value = "";
+    showScreen("landing");
+  });
+
+  resetBtn.addEventListener("click", function () {
+    if (!currentName) return;
+    if (!confirm("להתחיל לוח בינגו חדש ולמחוק את הסימונים הנוכחיים?")) return;
+    var player = store.players[currentName];
+    var board = new Array(25).fill(false);
+    board[FREE_INDEX] = true;
+    player.board = board;
+    player.updatedAt = new Date().toISOString();
+    saveStore(store);
+    celebratedLines = [];
+    renderBoard();
+  });
+
+  // ---------- admin modal ----------
+  function renderAdminList() {
+    var players = Object.keys(store.players).map(function (k) { return store.players[k]; });
+    players.sort(function (a, b) { return new Date(b.joinedAt) - new Date(a.joinedAt); });
+
+    if (players.length === 0) {
+      adminListWrap.innerHTML = '<div class="empty">אף אחד עדיין לא שיחק במכשיר הזה</div>';
+      return;
+    }
+
+    var rows = players.map(function (p) {
+      var marked = p.board.filter(Boolean).length;
+      var d = new Date(p.joinedAt);
+      var dateStr = d.toLocaleDateString("he-IL") + " " + d.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
+      return "<tr><td>" + escapeHtml(p.name) + "</td><td>" + marked + "/25</td><td>" + dateStr + "</td></tr>";
+    }).join("");
+
+    adminListWrap.innerHTML =
+      '<table><thead><tr><th>שם</th><th>התקדמות</th><th>הצטרפ/ה</th></tr></thead><tbody>' +
+      rows + '</tbody></table>';
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  openAdminBtn.addEventListener("click", function () {
+    renderAdminList();
+    adminBackdrop.classList.add("show");
+  });
+  closeAdminBtn.addEventListener("click", function () {
+    adminBackdrop.classList.remove("show");
+  });
+  adminBackdrop.addEventListener("click", function (e) {
+    if (e.target === adminBackdrop) adminBackdrop.classList.remove("show");
+  });
+
+  exportCsvBtn.addEventListener("click", function () {
+    var players = Object.keys(store.players).map(function (k) { return store.players[k]; });
+    var lines = ["שם,התקדמות,הצטרפ/ה"];
+    players.forEach(function (p) {
+      var marked = p.board.filter(Boolean).length;
+      lines.push('"' + p.name.replace(/"/g, '""') + '",' + marked + "/25," + p.joinedAt);
+    });
+    var csv = "﻿" + lines.join("\n");
+    var blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "leaders-bingo-players.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  // ---------- boot ----------
+  (function boot() {
+    var lastPlayer = null;
+    try { lastPlayer = localStorage.getItem(CURRENT_PLAYER_KEY); } catch (e) {}
+    if (lastPlayer && store.players[lastPlayer]) {
+      startGameFor(lastPlayer);
+    } else {
+      var count = Object.keys(store.players).length;
+      if (count > 0) {
+        returningNote.textContent = "כבר שיחקו " + count + " בוגרים במכשיר הזה — הזינו שוב את שמכם כדי להמשיך במשחק שלכם.";
+      }
+      showScreen("landing");
+    }
+  })();
+
+})();
+</script>
+</body>
+</html>
