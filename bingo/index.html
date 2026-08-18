@@ -212,8 +212,8 @@
   .grid {
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 6px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
   }
 
   .cell {
@@ -241,9 +241,9 @@
     text-align: center;
   }
   .cell-task {
-    font-size: clamp(0.5rem, 2.1vw, 0.72rem);
+    font-size: clamp(0.6rem, 2.6vw, 0.88rem);
     font-weight: 600;
-    line-height: 1.25;
+    line-height: 1.3;
     color: #2a2a2a;
   }
   .cell-sig {
@@ -262,7 +262,7 @@
   }
   .cell-sig .sig-name {
     display: block;
-    font-size: clamp(0.42rem, 1.6vw, 0.6rem);
+    font-size: clamp(0.5rem, 2vw, 0.74rem);
     font-weight: 700;
     color: #0B6BFF;
     white-space: nowrap;
@@ -271,7 +271,7 @@
   }
   .cell-sig .sig-year {
     display: block;
-    font-size: clamp(0.38rem, 1.4vw, 0.54rem);
+    font-size: clamp(0.44rem, 1.7vw, 0.64rem);
     font-weight: 600;
     color: #6b7a94;
     margin-top: 1px;
@@ -448,7 +448,7 @@
         <div class="greeting">שלום, <span id="player-name-display"></span> <span class="wave">👋</span></div>
         <div class="header-actions">
           <button class="btn-small" id="switch-player-btn">החלפת שחקן/ית</button>
-          <button class="btn-small danger" id="reset-board-btn">לוח חדש</button>
+          <button class="btn-small danger" id="reset-board-btn">ניקוי סימונים</button>
         </div>
       </div>
 
@@ -548,22 +548,60 @@
     "עשה בשנה האחרונה משהו שהפחיד אותו"
   ];
 
+  var GRID_SIZE = 4;
+  var BOARD_SIZE = GRID_SIZE * GRID_SIZE; // 16
+
+  // The 25 questions are rated by difficulty. Each player's board draws a
+  // fixed mix from every tier (6 easy + 6 medium + 4 rare = 16 squares) so
+  // no one's board skews toward only the easy or only the hard questions.
+  var DIFFICULTY_GROUPS = {
+    easy: [0, 2, 5, 8, 11, 14, 15, 19, 21],
+    medium: [3, 6, 9, 12, 17, 18, 20, 22, 23],
+    rare: [1, 4, 7, 10, 13, 16, 24]
+  };
+  var PICK_COUNTS = { easy: 6, medium: 6, rare: 4 };
+
   var WIN_LINES = (function () {
     var lines = [];
-    for (var r = 0; r < 5; r++) {
+    for (var r = 0; r < GRID_SIZE; r++) {
       var row = [];
-      for (var c = 0; c < 5; c++) row.push(r * 5 + c);
+      for (var c = 0; c < GRID_SIZE; c++) row.push(r * GRID_SIZE + c);
       lines.push(row);
     }
-    for (var c2 = 0; c2 < 5; c2++) {
+    for (var c2 = 0; c2 < GRID_SIZE; c2++) {
       var col = [];
-      for (var r2 = 0; r2 < 5; r2++) col.push(r2 * 5 + c2);
+      for (var r2 = 0; r2 < GRID_SIZE; r2++) col.push(r2 * GRID_SIZE + c2);
       lines.push(col);
     }
-    lines.push([0, 6, 12, 18, 24]);
-    lines.push([4, 8, 12, 16, 20]);
+    var d1 = [], d2 = [];
+    for (var i = 0; i < GRID_SIZE; i++) {
+      d1.push(i * GRID_SIZE + i);
+      d2.push(i * GRID_SIZE + (GRID_SIZE - 1 - i));
+    }
+    lines.push(d1, d2);
     return lines;
   })();
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
+  // Picks this player's fixed set of 16 question indices (into TASKS),
+  // balanced across difficulty tiers, in random board order. Called once
+  // per name, at first sign-in, and never again for that name.
+  function generateBoardQuestions() {
+    var picks = [];
+    Object.keys(PICK_COUNTS).forEach(function (tier) {
+      var pool = shuffle(DIFFICULTY_GROUPS[tier]);
+      picks = picks.concat(pool.slice(0, PICK_COUNTS[tier]));
+    });
+    return shuffle(picks);
+  }
 
   function loadStore() {
     try {
@@ -588,7 +626,7 @@
   // cell was just a plain boolean.
   function normalizeBoard(board) {
     var out = [];
-    for (var i = 0; i < 25; i++) {
+    for (var i = 0; i < BOARD_SIZE; i++) {
       var cell = board && board[i];
       if (cell && typeof cell === "object") {
         out.push({ marked: !!cell.marked, name: cell.name || "", year: cell.year || "" });
@@ -601,18 +639,28 @@
 
   function getOrCreatePlayer(name) {
     var key = name;
-    if (!store.players[key]) {
-      store.players[key] = {
+    var player = store.players[key];
+
+    if (!player) {
+      player = store.players[key] = {
         name: name,
         joinedAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        questionIndices: generateBoardQuestions(),
         board: normalizeBoard(null)
       };
       saveStore(store);
+    } else if (!player.questionIndices || player.questionIndices.length !== BOARD_SIZE) {
+      // Upgrade a board saved before the 4x4/difficulty-tier board existed:
+      // assign this name its fixed random board and start it fresh, since
+      // old marks referred to a different 5x5 layout that no longer exists.
+      player.questionIndices = generateBoardQuestions();
+      player.board = normalizeBoard(null);
+      saveStore(store);
     } else {
-      store.players[key].board = normalizeBoard(store.players[key].board);
+      player.board = normalizeBoard(player.board);
     }
-    return store.players[key];
+    return player;
   }
 
   function persistCurrentPlayer(name) {
@@ -654,8 +702,9 @@
   }
 
   function buildGrid() {
+    var player = store.players[currentName];
     gridEl.innerHTML = "";
-    for (var i = 0; i < 25; i++) {
+    for (var i = 0; i < BOARD_SIZE; i++) {
       var cell = document.createElement("div");
       cell.className = "cell";
       cell.dataset.index = i;
@@ -665,7 +714,7 @@
 
       var task = document.createElement("div");
       task.className = "cell-task";
-      task.textContent = TASKS[i];
+      task.textContent = TASKS[player.questionIndices[i]];
       content.appendChild(task);
 
       var sig = document.createElement("div");
@@ -718,14 +767,14 @@
   function renderBoard() {
     var player = store.players[currentName];
     if (!player) return;
-    for (var i = 0; i < 25; i++) renderCellDisplay(i);
+    for (var i = 0; i < BOARD_SIZE; i++) renderCellDisplay(i);
     updateProgress();
   }
 
   function updateProgress() {
     var player = store.players[currentName];
     var markedCount = player.board.filter(function (c) { return c.marked; }).length;
-    var pct = Math.round((markedCount / 25) * 100);
+    var pct = Math.round((markedCount / BOARD_SIZE) * 100);
     progressBar.style.width = pct + "%";
   }
 
@@ -752,8 +801,9 @@
   }
 
   function openEntryModal(index) {
+    var player = store.players[currentName];
     pendingCellIndex = index;
-    entryModalTask.textContent = TASKS[index];
+    entryModalTask.textContent = TASKS[player.questionIndices[index]];
     entryNameInput.value = "";
     entryYearSelect.value = "";
     entryNameError.style.display = "none";
@@ -819,9 +869,11 @@
     showScreen("landing");
   });
 
+  // Clears marks/names only. The 16 questions themselves are fixed per
+  // name (assigned once at sign-in) and never reshuffled by this button.
   resetBtn.addEventListener("click", function () {
     if (!currentName) return;
-    if (!confirm("להתחיל לוח בינגו חדש ולמחוק את הסימונים הנוכחיים?")) return;
+    if (!confirm("לנקות את כל הסימונים בלוח? המשימות עצמן יישארו אותו דבר.")) return;
     var player = store.players[currentName];
     player.board = normalizeBoard(null);
     player.updatedAt = new Date().toISOString();
@@ -881,7 +933,7 @@
       var marked = p.board.filter(function (c) { return c.marked; }).length;
       var d = new Date(p.joinedAt);
       var dateStr = d.toLocaleDateString("he-IL") + " " + d.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
-      return "<tr><td>" + escapeHtml(p.name) + "</td><td>" + marked + "/25</td><td>" + dateStr + "</td></tr>";
+      return "<tr><td>" + escapeHtml(p.name) + "</td><td>" + marked + "/" + BOARD_SIZE + "</td><td>" + dateStr + "</td></tr>";
     }).join("");
 
     adminListWrap.innerHTML =
@@ -911,7 +963,7 @@
     var lines = ["שם,התקדמות,הצטרפ/ה"];
     players.forEach(function (p) {
       var marked = p.board.filter(function (c) { return c.marked; }).length;
-      lines.push('"' + p.name.replace(/"/g, '""') + '",' + marked + "/25," + p.joinedAt);
+      lines.push('"' + p.name.replace(/"/g, '""') + '",' + marked + "/" + BOARD_SIZE + "," + p.joinedAt);
     });
     var csv = "﻿" + lines.join("\n");
     var blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
