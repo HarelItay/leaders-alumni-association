@@ -3740,6 +3740,16 @@
                 return values;
             }
 
+            // Looks up a value in a parsed sheet/CSV row by column name, ignoring case,
+            // spacing, and underscores (so "Photo Filename", "photo_filename", and
+            // "PHOTO FILENAME" all match the same column regardless of how it was typed).
+            getFieldValueLoose(row, canonicalName) {
+                const normalize = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+                const target = normalize(canonicalName);
+                const key = Object.keys(row).find(k => normalize(k) === target);
+                return key ? row[key] : '';
+            }
+
             convertGoogleSheetsToAlumniFormat(row) {
                 try {
                     // Robust name mapping from common header variants
@@ -3752,7 +3762,7 @@
                         personal: {
                             name: fullName || 'Anonymous',
                             photo: 'LOAD_LOCAL_IMAGE', // Flag to load local image
-                            photo_filename: (row.photo_filename || row['Photo Filename'] || row['photo filename'] || '').toString().trim(),
+                            photo_filename: (this.getFieldValueLoose(row, 'photo_filename') || '').toString().trim(),
                             graduation_year: parseInt(row.graduation_year) || new Date().getFullYear(),
                             degree: row.degree || row.Degree || '',
                             location: {
@@ -3795,7 +3805,7 @@
                         personal: {
                             name: csvRow.name || 'Anonymous',
                             photo: 'LOAD_LOCAL_IMAGE', // Flag to load local image
-                            photo_filename: (csvRow.photo_filename || '').toString().trim(),
+                            photo_filename: (this.getFieldValueLoose(csvRow, 'photo_filename') || '').toString().trim(),
                             graduation_year: parseInt(csvRow.class) || new Date().getFullYear(), // Fixed: use 'class' field
                             degree: csvRow.degree || '', // Already correct
                             location: {
