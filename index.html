@@ -3752,6 +3752,7 @@
                         personal: {
                             name: fullName || 'Anonymous',
                             photo: 'LOAD_LOCAL_IMAGE', // Flag to load local image
+                            photo_filename: (row.photo_filename || row['Photo Filename'] || row['photo filename'] || '').toString().trim(),
                             graduation_year: parseInt(row.graduation_year) || new Date().getFullYear(),
                             degree: row.degree || row.Degree || '',
                             location: {
@@ -3794,6 +3795,7 @@
                         personal: {
                             name: csvRow.name || 'Anonymous',
                             photo: 'LOAD_LOCAL_IMAGE', // Flag to load local image
+                            photo_filename: (csvRow.photo_filename || '').toString().trim(),
                             graduation_year: parseInt(csvRow.class) || new Date().getFullYear(), // Fixed: use 'class' field
                             degree: csvRow.degree || '', // Already correct
                             location: {
@@ -3963,9 +3965,11 @@
                         return;
                     }
                     
-                    // ALWAYS try to load local image, ignore any Google Sheets photo data
-                    
-                    const localImageUrl = await this.getLocalProfileImage(fullName);
+                    // Use an explicit photo_filename override when present (for disambiguating
+                    // alumni who share the same full name, e.g. two "Tamir Cohen" entries),
+                    // otherwise fall back to matching the image by full name as before.
+                    const photoLookupKey = alumni.personal.photo_filename || fullName;
+                    const localImageUrl = await this.getLocalProfileImage(photoLookupKey);
                     if (localImageUrl) {
                         matchedCount++;
                         alumni.personal.photo = localImageUrl;
