@@ -3859,8 +3859,11 @@
                     
                     
                     try {
-                        // Try to load the image to see if it exists
-                        const response = await fetch(imagePath, { method: 'HEAD' }).catch(() => ({ ok: false }));
+                        // Try to load the image to see if it exists. Bypass the HTTP cache -
+                        // otherwise a "not found" result from before a photo was uploaded can
+                        // get cached and keep being replayed on every later reload, even after
+                        // the file is confirmed to exist.
+                        const response = await fetch(imagePath, { method: 'HEAD', cache: 'no-store' }).catch(() => ({ ok: false }));
                         if (response && response.ok) {
                             return imagePath;
                         }
@@ -3868,8 +3871,8 @@
                         // Silently handle errors
                     }
                 }
-                
-                
+
+
                 return null;
             }
 
